@@ -14,9 +14,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+
 #include "configdir.h"
 #include "misc.h"
 #include "storage.h"
+#include "dht.h"
 
 static Tox *init_tox()
 {
@@ -94,9 +96,15 @@ static void add_to_list(GtkWidget *list, const gchar *str)
 
 /* timer */
 
-static gboolean timer_handler(Tox *m) //change GtkWidget with Tox *
+static gboolean core_timer_handler(Tox *m)
 {
     do_tox(m);
+    return TRUE;
+}
+
+static gboolean dhtprint_timer_handler(Tox *m)
+{
+    dht_draw(m);
     return TRUE;
 }
 
@@ -132,7 +140,8 @@ int main(int argc, char *argv[])
 
     g_object_unref (G_OBJECT (builder));
     
-    g_timeout_add(50, (GSourceFunc) timer_handler, m);
+    g_timeout_add(50, (GSourceFunc) core_timer_handler, m);
+    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, m);
     gtk_widget_show (window);                
     gtk_main ();
     
