@@ -1,7 +1,7 @@
 #include <tox/tox.h>
 #include <gtk/gtk.h>
 #include "dht.h"  
-
+#include "gtkwindow.h"
 #include "include/DHT.h"
 
 

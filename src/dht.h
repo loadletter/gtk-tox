@@ -1,6 +1,7 @@
 #pragma once
 #include "include/Messenger.h"
 
+/* TODO: make it useful */
 struct window_m {
     Messenger *m;
     GtkWidget *window;

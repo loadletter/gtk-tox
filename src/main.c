@@ -19,6 +19,7 @@
 #include "misc.h"
 #include "storage.h"
 #include "dht.h"
+#include "gtkwindow.h"
 
 static Tox *init_tox()
 {
@@ -74,26 +75,6 @@ void on_window_destroy (GtkWidget *object, gpointer user_data)
     gtk_main_quit ();
 }
 
-/* treeview */
-
-enum
-{
-  LIST_ITEM = 0,
-  N_COLUMNS
-};
-
-static void add_to_list(GtkWidget *list, const gchar *str)
-{
-  GtkListStore *store;
-  GtkTreeIter iter;
-
-  store = GTK_LIST_STORE(gtk_tree_view_get_model
-      (GTK_TREE_VIEW(list)));
-
-  gtk_list_store_append(store, &iter);
-  gtk_list_store_set(store, &iter, LIST_ITEM, str, -1);
-}
-
 /* timer */
 
 static gboolean core_timer_handler(Tox *m)
@@ -134,7 +115,8 @@ int main(int argc, char *argv[])
     gtk_builder_connect_signals (builder, NULL);
 
 
-    add_to_list(friends_treeview, "vomit");
+    tw_add_to_list(friends_treeview, 0, "vomit");
+    tw_add_to_list(friends_treeview, 0, "chan");
     
     
     g_signal_connect(G_OBJECT (window), "destroy",
