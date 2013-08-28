@@ -1,8 +1,10 @@
 /*
-Compile with:
-  gcc -Wall -g -o tutorial configdir.c main.c `pkg-config --cflags --libs gtk+-3.0 libtoxcore` -export-dynamic
-
-TODO: CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP
+*Compile with:
+*  gcc -Wall -g -o tutorial configdir.c misc.c storage.c main.c `pkg-config --cflags --libs gtk+-3.0 libtoxcore` -export-dynamic
+*
+*TODO: Makefile
+* 
+*TODO: CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP
 */
 #include <gtk/gtk.h>
 #include <tox/tox.h>
@@ -14,8 +16,7 @@ TODO: CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CL
 #include <netdb.h>
 #include "configdir.h"
 #include "misc.h"
-
-char* SRVLIST_FILE = NULL;
+#include "storage.h"
 
 static Tox *init_tox()
 {
@@ -38,61 +39,6 @@ static Tox *init_tox()
     tox_setname(m, (uint8_t *) "Registered Minix user #4", sizeof("Registered Minix user #4"));
 #endif
     return m;
-}
-
-#define MAXLINE 90    /* Approx max number of chars in a sever line (IP + port + key) */
-#define MINLINE 70
-#define MAXSERVERS 50
-
-/* Connects to a random DHT server listed in the DHTservers file */
-int init_connection(Tox *m)
-{
-    FILE *fp = NULL;
-
-    if (tox_isconnected(m))
-        return 0;
-
-    fp = fopen(SRVLIST_FILE, "r");
-
-    if (!fp)
-        return 1;
-
-    char servers[MAXSERVERS][MAXLINE];
-    char line[MAXLINE];
-    int linecnt = 0;
-
-    while (fgets(line, sizeof(line), fp) && linecnt < MAXSERVERS) {
-        if (strlen(line) > MINLINE)
-            strcpy(servers[linecnt++], line);
-    }
-
-    if (linecnt < 1) {
-        fclose(fp);
-        return 2;
-    }
-
-    fclose(fp);
-
-    char *server = servers[rand() % linecnt];
-    char *ip = strtok(server, " ");
-    char *port = strtok(NULL, " ");
-    char *key = strtok(NULL, " ");
-
-    if (!ip || !port || !key)
-        return 3;
-
-    tox_IP_Port dht;
-    dht.port = htons(atoi(port));
-    uint32_t resolved_address = resolve_addr(ip);
-
-    if (resolved_address == 0)
-        return 0;
-
-    dht.ip.i = resolved_address;
-    uint8_t *binary_string = hex_string_to_bin(key);
-    tox_bootstrap(m, dht, binary_string);
-    free(binary_string);
-    return 0;
 }
 
 static void do_tox(Tox *m)
