@@ -102,9 +102,9 @@ static gboolean core_timer_handler(Tox *m)
     return TRUE;
 }
 
-static gboolean dhtprint_timer_handler(Tox *m)
+static gboolean dhtprint_timer_handler(struct window_m *w_m)
 {
-    dht_draw(m);
+    dht_draw(w_m);
     return TRUE;
 }
 
@@ -112,7 +112,9 @@ int main(int argc, char *argv[])
 {
     GtkBuilder      *builder; 
     GtkWidget       *window;
-    GtkWidget       *treeview;
+    GtkWidget       *friends_treeview;
+    GtkWidget       *dht_treeview;
+    struct window_m *w_m;
 
     gtk_init (&argc, &argv);
 
@@ -127,24 +129,28 @@ int main(int argc, char *argv[])
     builder = gtk_builder_new ();
     gtk_builder_add_from_file (builder, "gtktox.ui", NULL);
     window = GTK_WIDGET (gtk_builder_get_object (builder, "window1"));
-    treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview1"));
+    friends_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview1"));
     
     gtk_builder_connect_signals (builder, NULL);
 
 
-    add_to_list(treeview, "vomit");
+    add_to_list(friends_treeview, "vomit");
     
     
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(gtk_main_quit), NULL);
-
     g_object_unref (G_OBJECT (builder));
     
     g_timeout_add(50, (GSourceFunc) core_timer_handler, m);
-    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, m);
+    w_m->window = window;
+    w_m->m = m;
+    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, w_m);
+    
     gtk_widget_show (window);                
     gtk_main ();
     
     free(SRVLIST_FILE); /* TODO: make a cleanup function */
+    tox_kill(m);
+    
     return 0;
 }

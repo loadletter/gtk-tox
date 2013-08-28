@@ -1,4 +1,11 @@
 #pragma once
 #include "include/Messenger.h"
 
-void dht_draw(Messenger *m);
+struct window_m {
+    Messenger *m;
+    GtkWidget *window;
+};
+
+void dht_draw(struct window_m *);
+
+
