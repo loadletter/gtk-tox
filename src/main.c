@@ -56,30 +56,26 @@ static void do_tox(struct storage_data *stor_d)
         if (!conn_err) {
             conn_err = init_connection(stor_d);
             
-            printf("Establishing connection...\n");
             status = g_strdup_printf ("Establishing connection...");
-            gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
-            g_free (status);
-            
+            gtk_statusbar_push(GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+                        
             if (conn_err) {
-                printf("Auto-connect failed with error code %d\n", conn_err);
-                status = g_strdup_printf ("Auto-connect failed with error code %d", conn_err);
-                gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
-                g_free (status);
+                status = g_strdup_printf("Auto-connect failed with error code %d", conn_err);
+                gtk_statusbar_push(GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
             }
+            
+            g_free(status);
         }
     } else if (!dht_on && tox_isconnected(m)) {
         dht_on = TRUE;
-        printf("DHT connected.\n");
         status = g_strdup_printf ("DHT connected.");
         gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
-        g_free (status);
+        g_free(status);
     } else if (dht_on && !tox_isconnected(m)) {
         dht_on = FALSE;
-        printf("DHT disconnected. Attempting to reconnect.\n");
-        status = g_strdup_printf ("DHT disconnected. Attempting to reconnect.");
-        gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
-        g_free (status);
+        status = g_strdup_printf("DHT disconnected. Attempting to reconnect.");
+        gtk_statusbar_push(GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+        g_free(status);
     }
 
     tox_do(m);
