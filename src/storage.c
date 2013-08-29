@@ -71,5 +71,7 @@ char *get_full_configpath(const char *filename)
     strcat(full_path, CONFIGDIR);
     strcat(full_path, filename);
     
+    free(user_config_dir);
+    
     return full_path;
 }
