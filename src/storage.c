@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <tox/tox.h>
+#include <gtk/gtk.h>
 #include "misc.h"
 #include "storage.h"
 #include "configdir.h"
