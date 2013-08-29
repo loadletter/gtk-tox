@@ -50,20 +50,36 @@ static void do_tox(struct storage_data *stor_d)
     static int conn_err = 0;
     static int dht_on = FALSE;
     Tox *m = stor_d->tox;
+    gchar *status;
 
     if (!dht_on && !tox_isconnected(m) && !(conn_try++ % 100)) {
         if (!conn_err) {
             conn_err = init_connection(stor_d);
+            
             printf("Establishing connection...\n");
-            if (conn_err)
+            status = g_strdup_printf ("Establishing connection...");
+            gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+            g_free (status);
+            
+            if (conn_err) {
                 printf("Auto-connect failed with error code %d\n", conn_err);
+                status = g_strdup_printf ("Auto-connect failed with error code %d", conn_err);
+                gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+                g_free (status);
+            }
         }
     } else if (!dht_on && tox_isconnected(m)) {
         dht_on = TRUE;
         printf("DHT connected.\n");
+        status = g_strdup_printf ("DHT connected.");
+        gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+        g_free (status);
     } else if (dht_on && !tox_isconnected(m)) {
         dht_on = FALSE;
         printf("DHT disconnected. Attempting to reconnect.\n");
+        status = g_strdup_printf ("DHT disconnected. Attempting to reconnect.");
+        gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+        g_free (status);
     }
 
     tox_do(m);
@@ -94,8 +110,10 @@ int main(int argc, char *argv[])
 {
     GtkBuilder      *builder; 
     GtkWidget       *window;
+    GtkWidget       *statusbar;
     GtkWidget       *friends_treeview;
     GtkWidget       *dht_treeview;
+    guint           statusbar_context_id;
     PangoFontDescription    *font_desc;
     struct dht_tree_data dht_d;
     struct storage_data stor_d;
@@ -113,6 +131,7 @@ int main(int argc, char *argv[])
     window = GTK_WIDGET (gtk_builder_get_object (builder, "window1"));
     friends_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview1"));
     dht_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview2"));
+    statusbar = GTK_WIDGET (gtk_builder_get_object (builder, "statusbar1"));
     
     gtk_builder_connect_signals (builder, NULL);
 
@@ -123,10 +142,17 @@ int main(int argc, char *argv[])
         G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref (G_OBJECT (builder));
     
+    /* initialize statusbar */
+    stor_d.statusbar = statusbar;
+    statusbar_context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar), "gtk-tox");
+    stor_d.statusbar_context_id = statusbar_context_id;
+    
+    /* set monospace font on the DHT treeview */
     font_desc = pango_font_description_from_string("monospace");
     gtk_widget_override_font(dht_treeview, font_desc);     
     pango_font_description_free(font_desc);
     
+    /* add timeout callbacks */
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &stor_d);
     dht_d.gtk = dht_treeview;
     dht_d.m = m;
@@ -135,6 +161,7 @@ int main(int argc, char *argv[])
     gtk_widget_show (window);                
     gtk_main ();
     
+    /* cleanup */
     free(stor_d.srvlist_path); /* TODO: make a cleanup function */
     free(stor_d.datafile_path);
     tox_kill(m);

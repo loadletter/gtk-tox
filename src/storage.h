@@ -4,6 +4,8 @@ struct storage_data {
     Tox     *tox;
     char    *srvlist_path;
     char    *datafile_path;
+    GtkWidget *statusbar;
+    guint   statusbar_context_id;
 };
 
 /* DHTservers stuff */
