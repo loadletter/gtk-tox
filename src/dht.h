@@ -1,12 +1,11 @@
 #pragma once
 #include "include/Messenger.h"
 
-/* TODO: make it useful */
-struct window_m {
+struct dht_tree_data {
     Messenger *m;
-    GtkWidget *window;
+    GtkWidget *gtk;
 };
 
-void dht_draw(struct window_m *);
+void dht_draw(struct dht_tree_data *);
 
 

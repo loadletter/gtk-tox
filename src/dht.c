@@ -17,10 +17,10 @@ static void printip(ipbuf buf, IP ip)
     sprintf((char *)buf, "%u.%u.%u.%u", ip.c[0], ip.c[1], ip.c[2], ip.c[3]);
 }
 
-void dht_draw(struct window_m *w_m)
+void dht_draw(struct dht_tree_data *dht_d)
 {
-    Messenger *m = w_m->m;
-    GtkWidget *window = w_m->window;
+    Messenger *m = dht_d->m;
+    GtkWidget *dht_treeview = dht_d->gtk;
     
     Client_data *close_clientlist = DHT_get_close_list(m->dht);
     
