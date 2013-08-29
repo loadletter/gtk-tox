@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
     GtkWidget       *window;
     GtkWidget       *friends_treeview;
     GtkWidget       *dht_treeview;
+    PangoFontDescription    *font_desc;
     struct dht_tree_data dht_d;
 
     gtk_init (&argc, &argv);
@@ -116,13 +117,17 @@ int main(int argc, char *argv[])
     gtk_builder_connect_signals (builder, NULL);
 
 
-    tw_add_to_list(friends_treeview, 0, "vomit");
-    tw_add_to_list(friends_treeview, 0, "chan");
+   /* tw_add_to_list(friends_treeview, 0, "vomit");
+    tw_add_to_list(friends_treeview, 0, "chan");*/
     
     
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref (G_OBJECT (builder));
+    
+    font_desc = pango_font_description_from_string("monospace");
+    gtk_widget_override_font(dht_treeview, font_desc);     
+    pango_font_description_free(font_desc);
     
     g_timeout_add(50, (GSourceFunc) core_timer_handler, m);
     dht_d.gtk = dht_treeview;
