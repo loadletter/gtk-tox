@@ -17,4 +17,5 @@ int init_connection(struct storage_data *stor_d);
 char *get_full_configpath(const char *filename);
 
 /* Userdata storage */
-/* TODO */
+int store_data(struct storage_data *stor_d);
+int load_data(struct storage_data *stor_d);

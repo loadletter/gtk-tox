@@ -75,3 +75,93 @@ char *get_full_configpath(const char *filename)
     
     return full_path;
 }
+
+
+/*
+ * Store Messenger to given location
+ * Return 0 stored successfully
+ * Return 1 malloc failed
+ * Return 2 opening path failed
+ * Return 3 fwrite failed
+ */
+int store_data(struct storage_data *stor_d)
+{
+    FILE *fd;
+    size_t len;
+    uint8_t *buf;
+
+    len = tox_size(stor_d->tox);
+    buf = malloc(len);
+
+    if (buf == NULL) {
+        return 1;
+    }
+
+    tox_save(stor_d->tox, buf);
+
+    fd = fopen(stor_d->datafile_path, "w");
+
+    if (fd == NULL) {
+        free(buf);
+        return 2;
+    }
+
+    if (fwrite(buf, len, 1, fd) != 1) {
+        free(buf);
+        fclose(fd);
+        return 3;
+    }
+
+    free(buf);
+    fclose(fd);
+    return 0;
+}
+
+int load_data(struct storage_data *stor_d)
+{
+    FILE *fd;
+    size_t len;
+    uint8_t *buf;
+
+    if ((fd = fopen(stor_d->datafile_path, "r")) != NULL) {
+        fseek(fd, 0, SEEK_END);
+        len = ftell(fd);
+        fseek(fd, 0, SEEK_SET);
+
+        buf = malloc(len);
+
+        if (buf == NULL) {
+            fprintf(stderr, "malloc() failed.\n");
+            fclose(fd);
+            return(1);
+        }
+
+        if (fread(buf, len, 1, fd) != 1) {
+            fprintf(stderr, "fread() failed.\n");
+            free(buf);
+            fclose(fd);
+            return(4);
+        }
+
+        tox_load(stor_d->tox, buf, len);
+
+        uint32_t i = 0;
+
+        char name[TOX_MAX_NAME_LENGTH];
+        while (tox_getname(stor_d->tox, i, (uint8_t *)name) != -1) {
+            /*on_friendadded(stor_d->tox, i); TODO: implement*/
+            i++;
+        }
+
+        free(buf);
+        fclose(fd);
+    } else {
+        int st;
+
+        if ((st = store_data(stor_d)) != 0) {
+            fprintf(stderr, "Store messenger failed with return code: %d\n", st);
+            exit(1);
+        }
+    }
+    return 0;
+}

@@ -2,9 +2,11 @@
 *Compile with:
 *  gcc -Wall -g -o tutorial configdir.c misc.c storage.c main.c `pkg-config --cflags --libs gtk+-3.0 libtoxcore` -export-dynamic
 *
-*TODO: Makefile
+* TODO: Makefile
 * 
-*TODO: CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP
+* TODO: CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP CLEANUP
+* 
+* TODO: more error checking
 */
 #include <gtk/gtk.h>
 #include <tox/tox.h>
@@ -113,15 +115,23 @@ int main(int argc, char *argv[])
     PangoFontDescription    *font_desc;
     struct dht_tree_data dht_d;
     struct storage_data stor_d;
-
-    gtk_init (&argc, &argv);
-
+    int rc = 0;
+    
     Tox *m = init_tox();
     
     stor_d.tox = m;
-    stor_d.srvlist_path = get_full_configpath("DHTservers");
-    stor_d.datafile_path = get_full_configpath("data");
-    
+    /*rc = create_user_config_dir(user_config_dir); TODO:fix */
+    if(rc) {
+    /* error, try loading from current dir */
+        stor_d.srvlist_path = strdup("DHTservers");
+        stor_d.datafile_path = strdup("data");
+    } else {
+    /* ok, load from user config dir */
+        stor_d.srvlist_path = get_full_configpath("DHTservers");
+        stor_d.datafile_path = get_full_configpath("data");
+    }
+        
+    gtk_init (&argc, &argv);
     builder = gtk_builder_new ();
     gtk_builder_add_from_file (builder, "gtktox.ui", NULL);
     window = GTK_WIDGET (gtk_builder_get_object (builder, "window1"));
