@@ -5,18 +5,18 @@
 #include <tox/tox.h>
 #include "misc.h"
 #include "storage.h"
-
-char* SRVLIST_FILE = NULL;
+#include "configdir.h"
 
 /* Connects to a random DHT server listed in the DHTservers file */
-int init_connection(Tox *m)
+int init_connection(struct storage_data *stor_d)
 {
+    Tox *m = stor_d->tox;
     FILE *fp = NULL;
 
     if (tox_isconnected(m))
         return 0;
 
-    fp = fopen(SRVLIST_FILE, "r");
+    fp = fopen(stor_d->srvlist_path, "r");
 
     if (!fp)
         return 1;
@@ -57,4 +57,18 @@ int init_connection(Tox *m)
     tox_bootstrap(m, dht, binary_string);
     free(binary_string);
     return 0;
+}
+
+/* mallocs the string which contains path+filename */
+char *get_full_configpath(const char *filename)
+{
+    char *user_config_dir = get_user_config_dir();
+    char *full_path;
+    
+    full_path = malloc(strlen(user_config_dir) + strlen(CONFIGDIR) + strlen(filename) + 1);
+    strcpy(full_path, user_config_dir);
+    strcat(full_path, CONFIGDIR);
+    strcat(full_path, filename);
+    
+    return full_path;
 }

@@ -44,15 +44,16 @@ static Tox *init_tox()
     return m;
 }
 
-static void do_tox(Tox *m)
+static void do_tox(struct storage_data *stor_d)
 {
     static int conn_try = 0;
     static int conn_err = 0;
     static int dht_on = FALSE;
+    Tox *m = stor_d->tox;
 
     if (!dht_on && !tox_isconnected(m) && !(conn_try++ % 100)) {
         if (!conn_err) {
-            conn_err = init_connection(m);
+            conn_err = init_connection(stor_d);
             printf("Establishing connection...\n");
             if (conn_err)
                 printf("Auto-connect failed with error code %d\n", conn_err);
@@ -77,9 +78,9 @@ void on_window_destroy (GtkWidget *object, gpointer user_data)
 
 /* timer */
 
-static gboolean core_timer_handler(Tox *m)
+static gboolean core_timer_handler(struct storage_data *stor_d)
 {
-    do_tox(m);
+    do_tox(stor_d);
     return TRUE;
 }
 
@@ -97,16 +98,15 @@ int main(int argc, char *argv[])
     GtkWidget       *dht_treeview;
     PangoFontDescription    *font_desc;
     struct dht_tree_data dht_d;
+    struct storage_data stor_d;
 
     gtk_init (&argc, &argv);
 
     Tox *m = init_tox();
     
-    char *user_config_dir = get_user_config_dir();
-    SRVLIST_FILE = malloc(strlen(user_config_dir) + strlen(CONFIGDIR) + strlen("DHTservers") + 1);
-    strcpy(SRVLIST_FILE, user_config_dir);
-    strcat(SRVLIST_FILE, CONFIGDIR);
-    strcat(SRVLIST_FILE, "DHTservers");
+    stor_d.tox = m;
+    stor_d.srvlist_path = get_full_configpath("DHTservers");
+    stor_d.datafile_path = get_full_configpath("data");
     
     builder = gtk_builder_new ();
     gtk_builder_add_from_file (builder, "gtktox.ui", NULL);
@@ -116,10 +116,8 @@ int main(int argc, char *argv[])
     
     gtk_builder_connect_signals (builder, NULL);
 
-
    /* tw_add_to_list(friends_treeview, 0, "vomit");
     tw_add_to_list(friends_treeview, 0, "chan");*/
-    
     
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(gtk_main_quit), NULL);
@@ -129,7 +127,7 @@ int main(int argc, char *argv[])
     gtk_widget_override_font(dht_treeview, font_desc);     
     pango_font_description_free(font_desc);
     
-    g_timeout_add(50, (GSourceFunc) core_timer_handler, m);
+    g_timeout_add(50, (GSourceFunc) core_timer_handler, &stor_d);
     dht_d.gtk = dht_treeview;
     dht_d.m = m;
     g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &dht_d);
@@ -137,7 +135,8 @@ int main(int argc, char *argv[])
     gtk_widget_show (window);                
     gtk_main ();
     
-    free(SRVLIST_FILE); /* TODO: make a cleanup function */
+    free(stor_d.srvlist_path); /* TODO: make a cleanup function */
+    free(stor_d.datafile_path);
     tox_kill(m);
     
     return 0;
