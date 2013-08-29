@@ -32,7 +32,6 @@ void dht_draw(struct dht_tree_data *dht_d)
     uint64_t now = unix_time();
     uint32_t i, j;
     ipbuf ipbuf;
-    printf("\n%llu  ______________________ CLOSE LIST ________________________  ___ IP ADDR ___ _PRT_   LST   PNG    ____ SELF ____ _PRT_  LST\n\n", now);
 
     for (i = 0; i < LCLIENT_LIST; i++) { /*Number of nodes in closelist*/
     
@@ -41,39 +40,27 @@ void dht_draw(struct dht_tree_data *dht_d)
         char tmp_id[(CLIENT_ID_SIZE * 2) + 1], tmp_port[6];
         
         if (port) {
-            gtk_list_store_append(store, &iter);
             memset(tmp_id, '\0', sizeof(tmp_id));
             memset(tmp_port, '\0', sizeof(tmp_port));
-            
+            gtk_list_store_append(store, &iter);
+                        
             for (j = 0; j < CLIENT_ID_SIZE; j++)
                 sprintf(tmp_id,"%s%02hhx", tmp_id, client->client_id[j]);
-            
-            printf("%s", tmp_id);
             gtk_list_store_set(store, &iter, 0, tmp_id, -1);
 
             printip(ipbuf, client->ip_port.ip);
-            printf("  %15s %5u ", ipbuf, port);
-            printf("  %3llu ", now - client->timestamp);
-            printf("  %3llu ", now - client->last_pinged);
-            gtk_list_store_set(store, &iter, 1, ipbuf, -1);
-            sprintf(tmp_port, "%5u", port);            
-            gtk_list_store_set(store, &iter, 2, tmp_port, -1);
-            gtk_list_store_set(store, &iter, 3, now - client->timestamp, -1);
-            gtk_list_store_set(store, &iter, 4, now - client->last_pinged, -1);
+            sprintf(tmp_port, "%5u", port);
+            gtk_list_store_set(store, &iter, 1, ipbuf, 2, tmp_port, -1);        
+            gtk_list_store_set(store, &iter, 3, now - client->timestamp, 4, now - client->last_pinged, -1);
             
             port = ntohs(client->ret_ip_port.port);
-
             if (port) {
                 printip(ipbuf, client->ret_ip_port.ip);
-                printf("  %15s %5u  %3llu", ipbuf, port, now - close_clientlist[i].ret_timestamp);
-                gtk_list_store_set(store, &iter, 5, ipbuf, -1);
                 sprintf(tmp_port, "%5u", port);
-                gtk_list_store_set(store, &iter, 6, tmp_port, -1);
+                gtk_list_store_set(store, &iter, 5, ipbuf, 6, tmp_port, -1);
                 gtk_list_store_set(store, &iter, 7, now - close_clientlist[i].ret_timestamp, -1);
             }
         }
-
-        printf("\n");
     }
     
 }
