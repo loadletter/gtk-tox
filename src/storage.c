@@ -11,10 +11,9 @@
 /* Connects to a random DHT server listed in the DHTservers file */
 int init_connection(struct gtox_data *gtox)
 {
-    Tox *m = gtox->tox;
     FILE *fp = NULL;
 
-    if (tox_isconnected(m))
+    if (tox_isconnected(gtox->tox))
         return 0;
 
     fp = fopen(gtox->srvlist_path, "r");
@@ -55,7 +54,7 @@ int init_connection(struct gtox_data *gtox)
 
     dht.ip.i = resolved_address;
     uint8_t *binary_string = hex_string_to_bin(key);
-    tox_bootstrap(m, dht, binary_string);
+    tox_bootstrap(gtox->tox, dht, binary_string);
     free(binary_string);
     return 0;
 }

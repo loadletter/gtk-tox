@@ -1,14 +1,6 @@
 #pragma once
 #include "gtkwindow.h"
 
-struct storage_data {
-    Tox     *tox;
-    char    *srvlist_path;
-    char    *datafile_path;
-    GtkWidget *statusbar;
-    guint   statusbar_context_id;
-};
-
 /* DHTservers stuff */
 #define MAXLINE 90    /* Approx max number of chars in a sever line (IP + port + key) */
 #define MINLINE 70
