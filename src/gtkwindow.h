@@ -5,6 +5,7 @@ struct gtox_data {
     char    *srvlist_path;
     char    *datafile_path;
     GtkWidget *statusbar;
+    GtkNotebook *notebook;
     GtkWidget *dht_treeview;
     guint   statusbar_context_id;
 };

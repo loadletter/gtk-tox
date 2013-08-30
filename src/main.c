@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
     GtkWidget       *statusbar;
     GtkWidget       *friends_treeview;
     GtkWidget       *dht_treeview;
+    GtkNotebook     *notebook;
     guint           statusbar_context_id;
     PangoFontDescription    *font_desc;
     struct gtox_data gtox;
@@ -137,6 +138,7 @@ int main(int argc, char *argv[])
     friends_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview1"));
     dht_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview2"));
     statusbar = GTK_WIDGET (gtk_builder_get_object (builder, "statusbar1"));
+    notebook = GTK_NOTEBOOK (gtk_builder_get_object (builder, "notebook1"));
     
     gtk_builder_connect_signals (builder, NULL);
 
@@ -150,6 +152,7 @@ int main(int argc, char *argv[])
     /* copy some gtkwidgets to gtox_data */
     gtox.dht_treeview = dht_treeview;
     gtox.statusbar = statusbar;
+    gtox.notebook = notebook;
     /* initialize statusbar */
     statusbar_context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar), "gtk-tox");
     gtox.statusbar_context_id = statusbar_context_id;

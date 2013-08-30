@@ -23,6 +23,10 @@ void dht_draw(struct gtox_data *gtox)
     GtkListStore *store;
     GtkTreeIter iter;
 
+    /* don't waste cpu if the current page is not the dht page */
+    if(!gtk_notebook_get_current_page(gtox->notebook))
+        return;
+
     store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(dht_treeview)));
     gtk_list_store_clear(store);
     
