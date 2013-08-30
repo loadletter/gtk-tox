@@ -1,4 +1,5 @@
 #pragma once
+#include "gtkwindow.h"
 #include "include/Messenger.h"
 
 struct dht_tree_data {
@@ -6,6 +7,6 @@ struct dht_tree_data {
     GtkWidget *gtk;
 };
 
-void dht_draw(struct dht_tree_data *);
+void dht_draw(struct gtox_data *gtox);
 
 

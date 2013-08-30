@@ -3,7 +3,7 @@ LDFLAGS=$(shell pkg-config --libs gtk+-3.0 libtoxcore)
 
 all: main
 
-main: configdir.o misc.o storage.o dht.o gtkwindow.o main.o
+main: gtkwindow.o configdir.o misc.o storage.o dht.o main.o
 
 clean:
 	rm -f gtk-tox *.o

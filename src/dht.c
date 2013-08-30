@@ -1,7 +1,6 @@
 #include <tox/tox.h>
 #include <gtk/gtk.h>
 #include "dht.h"  
-#include "gtkwindow.h"
 #include "include/DHT.h"
 
 
@@ -17,10 +16,10 @@ static void printip(ipbuf buf, IP ip)
     sprintf((char *)buf, "%u.%u.%u.%u", ip.c[0], ip.c[1], ip.c[2], ip.c[3]);
 }
 
-void dht_draw(struct dht_tree_data *dht_d)
+void dht_draw(struct gtox_data *gtox)
 {
-    Messenger   *m = dht_d->m;
-    GtkWidget   *dht_treeview = dht_d->gtk;
+    Messenger   *m = gtox->tox;
+    GtkWidget   *dht_treeview = gtox->dht_treeview;
     GtkListStore *store;
     GtkTreeIter iter;
 

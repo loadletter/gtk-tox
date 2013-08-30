@@ -98,9 +98,9 @@ static gboolean core_timer_handler(struct storage_data *stor_d)
     return TRUE;
 }
 
-static gboolean dhtprint_timer_handler(struct dht_tree_data *dht_d)
+static gboolean dhtprint_timer_handler(struct gtox_data *gtox)
 {
-    dht_draw(dht_d);
+    dht_draw(gtox);
     return TRUE;
 }
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     GtkWidget       *dht_treeview;
     guint           statusbar_context_id;
     PangoFontDescription    *font_desc;
-    struct dht_tree_data dht_d;
+    struct gtox_data gtox_d;
     struct storage_data stor_d;
     int rc = 0;
     
@@ -160,9 +160,9 @@ int main(int argc, char *argv[])
     
     /* add timeout callbacks */
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &stor_d);
-    dht_d.gtk = dht_treeview;
-    dht_d.m = m;
-    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &dht_d);
+    gtox_d.dht_treeview = dht_treeview;
+    gtox_d.tox = m;
+    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox_d);
     
     gtk_widget_show (window);                
     gtk_main ();
