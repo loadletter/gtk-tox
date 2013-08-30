@@ -6,7 +6,7 @@ all: main
 main: gtkwindow.o configdir.o misc.o storage.o dht.o main.o
 
 clean:
-	rm -f gtk-tox *.o
+	rm -f main *.o
 
 objclean:
 	rm -f *.o

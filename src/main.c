@@ -113,8 +113,10 @@ int main(int argc, char *argv[])
     GtkWidget       *dht_treeview;
     GtkNotebook     *notebook;
     guint           statusbar_context_id;
+    gchar           *window_title;
     PangoFontDescription    *font_desc;
     struct gtox_data gtox;
+    char *our_ID;
     int rc = 0;
     
     Tox *m = init_tox();
@@ -122,7 +124,7 @@ int main(int argc, char *argv[])
     
     /*rc = create_user_config_dir(user_config_dir); TODO:fix */
     if(rc) {
-    /* error, try loading from current dir */
+    /* error, load from current dir */
         gtox.srvlist_path = strdup("DHTservers");
         gtox.datafile_path = strdup("data");
     } else {
@@ -130,7 +132,12 @@ int main(int argc, char *argv[])
         gtox.srvlist_path = get_full_configpath("DHTservers");
         gtox.datafile_path = get_full_configpath("data");
     }
-        
+    
+    /* load the data */
+    load_data(&gtox);
+    our_ID = own_id(m);
+    
+    /* initialize and load the gui */    
     gtk_init (&argc, &argv);
     builder = gtk_builder_new ();
     gtk_builder_add_from_file (builder, "gtktox.ui", NULL);
@@ -148,6 +155,11 @@ int main(int argc, char *argv[])
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref (G_OBJECT (builder));
+    
+    /*  set the title of the window */
+    window_title = g_strdup_printf("GtkTox - ID: %s", our_ID);
+    gtk_window_set_title(GTK_WINDOW (window), window_title);
+    g_free(window_title);
     
     /* copy some gtkwidgets to gtox_data */
     gtox.dht_treeview = dht_treeview;
@@ -172,6 +184,7 @@ int main(int argc, char *argv[])
     /* cleanup */
     free(gtox.srvlist_path); /* TODO: make a cleanup function */
     free(gtox.datafile_path);
+    free(our_ID);
     tox_kill(m);
     
     return 0;

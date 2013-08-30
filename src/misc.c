@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <tox/tox.h>
 #include <netdb.h>
 #include <stdlib.h>
 
@@ -57,4 +58,16 @@ unsigned char *hex_string_to_bin(char hex_string[])
         sscanf(pos, "%2hhx", &val[i]);
 
     return val;
+}
+
+char *own_id(Tox *m)
+{
+    char id[TOX_FRIEND_ADDRESS_SIZE * 2 + 1] = {0};
+    int i;
+    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
+    tox_getaddress(m, address);
+
+    for (i = 0; i < TOX_FRIEND_ADDRESS_SIZE; i++)
+        sprintf(id,"%s%02hhx", id, address[i]);
+    return strdup(id);
 }
