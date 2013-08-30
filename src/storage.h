@@ -1,4 +1,5 @@
 #pragma once
+#include "gtkwindow.h"
 
 struct storage_data {
     Tox     *tox;
@@ -13,9 +14,9 @@ struct storage_data {
 #define MINLINE 70
 #define MAXSERVERS 50
 
-int init_connection(struct storage_data *stor_d);
+int init_connection(struct gtox_data *gtox);
 char *get_full_configpath(const char *filename);
 
 /* Userdata storage */
-int store_data(struct storage_data *stor_d);
-int load_data(struct storage_data *stor_d);
+int store_data(struct gtox_data *gtox);
+int load_data(struct gtox_data *gtox);

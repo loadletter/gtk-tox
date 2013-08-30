@@ -46,24 +46,24 @@ static Tox *init_tox()
     return m;
 }
 
-static void do_tox(struct storage_data *stor_d)
+static void do_tox(struct gtox_data *gtox)
 {
     static int conn_try = 0;
     static int conn_err = 0;
     static int dht_on = FALSE;
-    Tox *m = stor_d->tox;
+    Tox *m = gtox->tox;
     gchar *status;
 
     if (!dht_on && !tox_isconnected(m) && !(conn_try++ % 100)) {
         if (!conn_err) {
-            conn_err = init_connection(stor_d);
+            conn_err = init_connection(gtox);
             
             status = g_strdup_printf ("Establishing connection...");
-            gtk_statusbar_push(GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+            gtk_statusbar_push(GTK_STATUSBAR (gtox->statusbar), gtox->statusbar_context_id, status);
                         
             if (conn_err) {
                 status = g_strdup_printf("Auto-connect failed with error code %d", conn_err);
-                gtk_statusbar_push(GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+                gtk_statusbar_push(GTK_STATUSBAR (gtox->statusbar), gtox->statusbar_context_id, status);
             }
             
             g_free(status);
@@ -71,12 +71,12 @@ static void do_tox(struct storage_data *stor_d)
     } else if (!dht_on && tox_isconnected(m)) {
         dht_on = TRUE;
         status = g_strdup_printf ("DHT connected.");
-        gtk_statusbar_push (GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+        gtk_statusbar_push (GTK_STATUSBAR (gtox->statusbar), gtox->statusbar_context_id, status);
         g_free(status);
     } else if (dht_on && !tox_isconnected(m)) {
         dht_on = FALSE;
         status = g_strdup_printf("DHT disconnected. Attempting to reconnect.");
-        gtk_statusbar_push(GTK_STATUSBAR (stor_d->statusbar), stor_d->statusbar_context_id, status);
+        gtk_statusbar_push(GTK_STATUSBAR (gtox->statusbar), gtox->statusbar_context_id, status);
         g_free(status);
     }
 
@@ -92,9 +92,9 @@ void on_window_destroy (GtkWidget *object, gpointer user_data)
 
 /* timer */
 
-static gboolean core_timer_handler(struct storage_data *stor_d)
+static gboolean core_timer_handler(struct gtox_data *gtox)
 {
-    do_tox(stor_d);
+    do_tox(gtox);
     return TRUE;
 }
 
@@ -113,22 +113,21 @@ int main(int argc, char *argv[])
     GtkWidget       *dht_treeview;
     guint           statusbar_context_id;
     PangoFontDescription    *font_desc;
-    struct gtox_data gtox_d;
-    struct storage_data stor_d;
+    struct gtox_data gtox;
     int rc = 0;
     
     Tox *m = init_tox();
+    gtox.tox = m;
     
-    stor_d.tox = m;
     /*rc = create_user_config_dir(user_config_dir); TODO:fix */
     if(rc) {
     /* error, try loading from current dir */
-        stor_d.srvlist_path = strdup("DHTservers");
-        stor_d.datafile_path = strdup("data");
+        gtox.srvlist_path = strdup("DHTservers");
+        gtox.datafile_path = strdup("data");
     } else {
     /* ok, load from user config dir */
-        stor_d.srvlist_path = get_full_configpath("DHTservers");
-        stor_d.datafile_path = get_full_configpath("data");
+        gtox.srvlist_path = get_full_configpath("DHTservers");
+        gtox.datafile_path = get_full_configpath("data");
     }
         
     gtk_init (&argc, &argv);
@@ -148,10 +147,12 @@ int main(int argc, char *argv[])
         G_CALLBACK(gtk_main_quit), NULL);
     g_object_unref (G_OBJECT (builder));
     
+    /* copy some gtkwidgets to gtox_data */
+    gtox.dht_treeview = dht_treeview;
+    gtox.statusbar = statusbar;
     /* initialize statusbar */
-    stor_d.statusbar = statusbar;
     statusbar_context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar), "gtk-tox");
-    stor_d.statusbar_context_id = statusbar_context_id;
+    gtox.statusbar_context_id = statusbar_context_id;
     
     /* set monospace font on the DHT treeview */
     font_desc = pango_font_description_from_string("monospace");
@@ -159,17 +160,15 @@ int main(int argc, char *argv[])
     pango_font_description_free(font_desc);
     
     /* add timeout callbacks */
-    g_timeout_add(50, (GSourceFunc) core_timer_handler, &stor_d);
-    gtox_d.dht_treeview = dht_treeview;
-    gtox_d.tox = m;
-    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox_d);
+    g_timeout_add(50, (GSourceFunc) core_timer_handler, &gtox);
+    g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox);
     
     gtk_widget_show (window);                
     gtk_main ();
     
     /* cleanup */
-    free(stor_d.srvlist_path); /* TODO: make a cleanup function */
-    free(stor_d.datafile_path);
+    free(gtox.srvlist_path); /* TODO: make a cleanup function */
+    free(gtox.datafile_path);
     tox_kill(m);
     
     return 0;

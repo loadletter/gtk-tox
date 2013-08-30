@@ -9,15 +9,15 @@
 #include "configdir.h"
 
 /* Connects to a random DHT server listed in the DHTservers file */
-int init_connection(struct storage_data *stor_d)
+int init_connection(struct gtox_data *gtox)
 {
-    Tox *m = stor_d->tox;
+    Tox *m = gtox->tox;
     FILE *fp = NULL;
 
     if (tox_isconnected(m))
         return 0;
 
-    fp = fopen(stor_d->srvlist_path, "r");
+    fp = fopen(gtox->srvlist_path, "r");
 
     if (!fp)
         return 1;
@@ -84,22 +84,22 @@ char *get_full_configpath(const char *filename)
  * Return 2 opening path failed
  * Return 3 fwrite failed
  */
-int store_data(struct storage_data *stor_d)
+int store_data(struct gtox_data *gtox)
 {
     FILE *fd;
     size_t len;
     uint8_t *buf;
 
-    len = tox_size(stor_d->tox);
+    len = tox_size(gtox->tox);
     buf = malloc(len);
 
     if (buf == NULL) {
         return 1;
     }
 
-    tox_save(stor_d->tox, buf);
+    tox_save(gtox->tox, buf);
 
-    fd = fopen(stor_d->datafile_path, "w");
+    fd = fopen(gtox->datafile_path, "w");
 
     if (fd == NULL) {
         free(buf);
@@ -117,13 +117,13 @@ int store_data(struct storage_data *stor_d)
     return 0;
 }
 
-int load_data(struct storage_data *stor_d)
+int load_data(struct gtox_data *gtox)
 {
     FILE *fd;
     size_t len;
     uint8_t *buf;
 
-    if ((fd = fopen(stor_d->datafile_path, "r")) != NULL) {
+    if ((fd = fopen(gtox->datafile_path, "r")) != NULL) {
         fseek(fd, 0, SEEK_END);
         len = ftell(fd);
         fseek(fd, 0, SEEK_SET);
@@ -143,13 +143,13 @@ int load_data(struct storage_data *stor_d)
             return(4);
         }
 
-        tox_load(stor_d->tox, buf, len);
+        tox_load(gtox->tox, buf, len);
 
         uint32_t i = 0;
 
         char name[TOX_MAX_NAME_LENGTH];
-        while (tox_getname(stor_d->tox, i, (uint8_t *)name) != -1) {
-            /*on_friendadded(stor_d->tox, i); TODO: implement*/
+        while (tox_getname(gtox->tox, i, (uint8_t *)name) != -1) {
+            /*on_friendadded(gtox->tox, i); TODO: implement*/
             i++;
         }
 
@@ -158,7 +158,7 @@ int load_data(struct storage_data *stor_d)
     } else {
         int st;
 
-        if ((st = store_data(stor_d)) != 0) {
+        if ((st = store_data(gtox)) != 0) {
             fprintf(stderr, "Store messenger failed with return code: %d\n", st);
             exit(1);
         }
