@@ -27,13 +27,7 @@ static Tox *init_tox()
 {
     /* Init core */
     Tox *m = tox_new();
-
-    /* Callbacks */
-/*    tox_callback_friendrequest(m, on_request, NULL);                  //TODO
-    tox_callback_friendmessage(m, on_message, NULL);
-    tox_callback_namechange(m, on_nickchange, NULL);
-    tox_callback_statusmessage(m, on_statuschange, NULL);
-    tox_callback_action(m, on_action, NULL);*/
+    
 #ifdef __linux__
     tox_setname(m, (uint8_t *) "Cool guy", sizeof("Cool guy"));
 #elif defined(WIN32)
@@ -165,6 +159,8 @@ int main(int argc, char *argv[])
     gtox.dht_treeview = dht_treeview;
     gtox.statusbar = statusbar;
     gtox.notebook = notebook;
+    gtox.friends_treeview = friends_treeview;
+    
     /* initialize statusbar */
     statusbar_context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar), "gtk-tox");
     gtox.statusbar_context_id = statusbar_context_id;
@@ -174,7 +170,14 @@ int main(int argc, char *argv[])
     gtk_widget_override_font(dht_treeview, font_desc);     
     pango_font_description_free(font_desc);
     
+    /* add tox callbacks */
+/*    tox_callback_friendrequest(m, on_request, NULL);                  //TODO
+    tox_callback_friendmessage(m, on_message, NULL);
+    tox_callback_namechange(m, on_nickchange, NULL);
+    tox_callback_statusmessage(m, on_statuschange, NULL);
+    tox_callback_action(m, on_action, NULL);*/
     /* add timeout callbacks */
+    
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &gtox);
     g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox);
     

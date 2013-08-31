@@ -7,6 +7,7 @@ struct gtox_data {
     GtkWidget *statusbar;
     GtkNotebook *notebook;
     GtkWidget *dht_treeview;
+    GtkWidget *friends_treeview;
     guint   statusbar_context_id;
 };
 
