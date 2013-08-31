@@ -1,6 +1,7 @@
 #pragma once
 
 #define MAX_FRIENDS_NUM 100
+#define MAX_REQUESTS_NUM 256
 
 /* CALLBACKS START */
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata);

@@ -7,6 +7,7 @@
 #include "storage.h"
 #include "callbacks.h"
 
+/* friendlist */
 typedef struct {
     uint8_t name[TOX_MAX_NAME_LENGTH];
     uint8_t status[TOX_MAX_STATUSMESSAGE_LENGTH];
@@ -19,11 +20,23 @@ typedef struct {
 static friend_t friends[MAX_FRIENDS_NUM];
 static int num_friends = 0;
 
+/* friendrequests */
+static uint8_t pending_requests[MAX_REQUESTS_NUM][TOX_CLIENT_ID_SIZE]; // XXX
+static uint8_t num_requests = 0; // XXX
+
+
+int add_req(uint8_t *public_key)
+{
+    memcpy(pending_requests[num_requests], public_key, TOX_CLIENT_ID_SIZE);
+    ++num_requests;
+    return num_requests - 1;
+}
+
 /* CALLBACKS START */
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
-    /*int n = add_req(public_key);
-    wprintw(prompt->window, "\nFriend request from:\n");
+    int n = add_req(public_key);
+    /*wprintw(prompt->window, "\nFriend request from:\n"); TODO
 
     int i;
 
