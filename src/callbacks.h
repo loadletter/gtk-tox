@@ -8,5 +8,5 @@ void on_message(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void
 void on_action(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata);
 void on_nickchange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata);
 void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata);
-void on_friendadded(Tox *m, int friendnumber);
+void on_friendadded(struct gtox_data *gtox, int num);
 /* CALLBACKS END */

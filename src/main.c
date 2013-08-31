@@ -127,10 +127,6 @@ int main(int argc, char *argv[])
         gtox.datafile_path = get_full_configpath("data");
     }
     
-    /* load the data */
-    load_data(&gtox);
-    our_ID = own_id(m);
-    
     /* initialize and load the gui */    
     gtk_init (&argc, &argv);
     builder = gtk_builder_new ();
@@ -143,24 +139,27 @@ int main(int argc, char *argv[])
     
     gtk_builder_connect_signals (builder, NULL);
 
-   /* tw_add_to_list(friends_treeview, 0, "vomit");
-    tw_add_to_list(friends_treeview, 0, "chan");*/
-    
+   
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(gtk_main_quit), NULL);
-    g_object_unref (G_OBJECT (builder));
     
-    /*  set the title of the window */
-    window_title = g_strdup_printf("GtkTox - ID: %s", our_ID);
-    gtk_window_set_title(GTK_WINDOW (window), window_title);
-    g_free(window_title);
+    g_object_unref (G_OBJECT (builder));
     
     /* copy some gtkwidgets to gtox_data */
     gtox.dht_treeview = dht_treeview;
     gtox.statusbar = statusbar;
     gtox.notebook = notebook;
     gtox.friends_treeview = friends_treeview;
+
+    /* load the data */
+    load_data(&gtox);
+    our_ID = own_id(m);
     
+    /*  set the title of the window */
+    window_title = g_strdup_printf("GtkTox - ID: %s", our_ID);
+    gtk_window_set_title(GTK_WINDOW (window), window_title);
+    g_free(window_title);
+        
     /* initialize statusbar */
     statusbar_context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar), "gtk-tox");
     gtox.statusbar_context_id = statusbar_context_id;

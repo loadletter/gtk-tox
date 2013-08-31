@@ -7,6 +7,7 @@
 #include "misc.h"
 #include "storage.h"
 #include "configdir.h"
+#include "callbacks.h"
 
 /* Connects to a random DHT server listed in the DHTservers file */
 int init_connection(struct gtox_data *gtox)
@@ -148,7 +149,8 @@ int load_data(struct gtox_data *gtox)
 
         char name[TOX_MAX_NAME_LENGTH];
         while (tox_getname(gtox->tox, i, (uint8_t *)name) != -1) {
-            /*on_friendadded(gtox->tox, i); TODO: implement*/
+            on_friendadded(gtox, i);
+            printf("test%i\n",i);
             i++;
         }
 
