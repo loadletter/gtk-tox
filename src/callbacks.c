@@ -25,7 +25,7 @@ static uint8_t pending_requests[MAX_REQUESTS_NUM][TOX_CLIENT_ID_SIZE]; // XXX
 static uint8_t num_requests = 0; // XXX
 
 
-int add_req(uint8_t *public_key)
+static int add_req(uint8_t *public_key)
 {
     memcpy(pending_requests[num_requests], public_key, TOX_CLIENT_ID_SIZE);
     ++num_requests;
@@ -70,7 +70,16 @@ void on_nickchange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, v
 
 void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata)
 {
+    struct gtox_data *gtox = userdata;
+    GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
 
+    if (length >= TOX_MAX_STATUSMESSAGE_LENGTH || friendnumber >= num_friends)
+        return;
+
+    memcpy(&friends[friendnumber].status, (char *) string, length);
+    friends[friendnumber].status[length] = 0;
+    
+    gtk_list_store_set(store, &friends[friendnumber].iter, 1, friends[friendnumber].status, -1);
 }
 
 void on_friendadded(struct gtox_data *gtox, int num)

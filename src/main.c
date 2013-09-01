@@ -22,6 +22,7 @@
 #include "storage.h"
 #include "dht.h"
 #include "gtkwindow.h"
+#include "callbacks.h"
 
 static Tox *init_tox()
 {
@@ -172,11 +173,11 @@ int main(int argc, char *argv[])
     /* add tox callbacks */
 /*    tox_callback_friendrequest(m, on_request, NULL);                  //TODO
     tox_callback_friendmessage(m, on_message, NULL);
-    tox_callback_namechange(m, on_nickchange, NULL);
-    tox_callback_statusmessage(m, on_statuschange, NULL);
-    tox_callback_action(m, on_action, NULL);*/
+    tox_callback_namechange(m, on_nickchange, NULL);*/
+    tox_callback_statusmessage(m, on_statuschange, &gtox);
+   /* tox_callback_action(m, on_action, NULL);*/
+   
     /* add timeout callbacks */
-    
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &gtox);
     g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox);
     
