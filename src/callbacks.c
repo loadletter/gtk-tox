@@ -35,7 +35,11 @@ static int add_req(uint8_t *public_key)
 /* CALLBACKS START */
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
+    struct gtox_data *gtox = userdata;
+    GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
     int n = add_req(public_key);
+    
+    gtk_widget_show (gtox->friendreq_dialog);
     /*wprintw(prompt->window, "\nFriend request from:\n"); TODO
 
     int i;

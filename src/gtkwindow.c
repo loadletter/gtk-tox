@@ -44,3 +44,22 @@ void note_show_page(GtkNotebook *notebook, int pagenumber)
         gtk_widget_show(page);
         gtk_notebook_set_current_page(notebook, pagenumber);
 }
+
+void error_message (const gchar *message)
+{
+        GtkWidget               *dialog;
+        
+        /* log to terminal window */
+        g_warning (message);
+        
+        /* create an error message dialog and display modally to the user */
+        dialog = gtk_message_dialog_new (NULL, 
+                                         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                         GTK_MESSAGE_ERROR,
+                                         GTK_BUTTONS_OK,
+                                         message);
+        
+        gtk_window_set_title (GTK_WINDOW (dialog), "Error!");
+        gtk_dialog_run (GTK_DIALOG (dialog));      
+        gtk_widget_destroy (dialog);         
+}

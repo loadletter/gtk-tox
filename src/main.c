@@ -108,6 +108,8 @@ int main(int argc, char *argv[])
     GtkWidget       *statusbar;
     GtkWidget       *friends_treeview;
     GtkWidget       *dht_treeview;
+    GtkWidget       *friendreq_treeview;
+    GtkWidget       *friendreq_dialog;
     GtkNotebook     *notebook;
     guint           statusbar_context_id;
     gchar           *window_title;
@@ -139,7 +141,9 @@ int main(int argc, char *argv[])
     dht_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview2"));
     statusbar = GTK_WIDGET (gtk_builder_get_object (builder, "statusbar1"));
     notebook = GTK_NOTEBOOK (gtk_builder_get_object (builder, "notebook1"));
-    
+    friendreq_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview3"));
+    friendreq_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "friendrequest_d"));
+
     gtk_builder_connect_signals (builder, NULL);
 
    
@@ -153,6 +157,8 @@ int main(int argc, char *argv[])
     gtox.statusbar = statusbar;
     gtox.notebook = notebook;
     gtox.friends_treeview = friends_treeview;
+    gtox.friendreq_treeview = friendreq_treeview;
+    gtox.friendreq_dialog = friendreq_dialog;
 
     /* load the data */
     load_data(&gtox);
@@ -176,8 +182,8 @@ int main(int argc, char *argv[])
     note_hide_page(notebook, NOTEBOOK_FRIENDREQ);
     
     /* add tox callbacks */
-/*    tox_callback_friendrequest(m, on_request, NULL);                  //TODO
-    tox_callback_friendmessage(m, on_message, NULL);*/
+    tox_callback_friendrequest(m, on_request, &gtox);                  //TODO
+/*    tox_callback_friendmessage(m, on_message, NULL);*/
     tox_callback_namechange(m, on_nickchange, &gtox);
     tox_callback_statusmessage(m, on_statuschange, &gtox);
    /* tox_callback_action(m, on_action, NULL);*/

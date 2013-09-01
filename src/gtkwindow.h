@@ -8,6 +8,8 @@ struct gtox_data {
     GtkNotebook *notebook;
     GtkWidget *dht_treeview;
     GtkWidget *friends_treeview;
+    GtkWidget *friendreq_treeview;
+    GtkWidget *friendreq_dialog;
     guint   statusbar_context_id;
 };
 
@@ -24,3 +26,5 @@ void tw_clear_list(GtkWidget *list);
 
 void note_hide_page(GtkNotebook *notebook, int pagenumber);
 void note_show_page(GtkNotebook *notebook, int pagenumber);
+
+void error_message (const gchar *message);
