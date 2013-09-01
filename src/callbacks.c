@@ -65,7 +65,16 @@ void on_action(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void 
 
 void on_nickchange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata)
 {
+    struct gtox_data *gtox = userdata;
+    GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
+    
+    if (length >= TOX_MAX_NAME_LENGTH || friendnumber >= num_friends)
+        return;
 
+    memcpy((char *) &friends[friendnumber].name, (char *) string, length);
+    friends[friendnumber].name[length] = 0;
+    
+    gtk_list_store_set(store, &friends[friendnumber].iter, 0, friends[friendnumber].name, -1);
 }
 
 void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata)
@@ -76,7 +85,7 @@ void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length,
     if (length >= TOX_MAX_STATUSMESSAGE_LENGTH || friendnumber >= num_friends)
         return;
 
-    memcpy(&friends[friendnumber].status, (char *) string, length);
+    memcpy((char *) &friends[friendnumber].status, (char *) string, length);
     friends[friendnumber].status[length] = 0;
     
     gtk_list_store_set(store, &friends[friendnumber].iter, 1, friends[friendnumber].status, -1);

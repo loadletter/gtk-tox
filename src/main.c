@@ -174,8 +174,8 @@ int main(int argc, char *argv[])
     
     /* add tox callbacks */
 /*    tox_callback_friendrequest(m, on_request, NULL);                  //TODO
-    tox_callback_friendmessage(m, on_message, NULL);
-    tox_callback_namechange(m, on_nickchange, NULL);*/
+    tox_callback_friendmessage(m, on_message, NULL);*/
+    tox_callback_namechange(m, on_nickchange, &gtox);
     tox_callback_statusmessage(m, on_statuschange, &gtox);
    /* tox_callback_action(m, on_action, NULL);*/
    
