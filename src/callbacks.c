@@ -38,7 +38,7 @@ static int add_req(uint8_t *public_key)
 /* CALLBACKS START */
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
-    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
+    uint8_t address[TOX_CLIENT_ID_SIZE];
     char *plaintext_id;
     struct gtox_data *gtox = userdata;
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
@@ -46,8 +46,8 @@ void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userd
     
     /* set text in the dialog */
     gtk_label_set_text(gtox->friendreq_dialog_msg, (gchar *)data);
-    memcpy(address, public_key, TOX_FRIEND_ADDRESS_SIZE);
-    plaintext_id = human_readable_id(address);
+    memcpy(address, public_key, TOX_CLIENT_ID_SIZE);
+    plaintext_id = human_readable_id(address, TOX_CLIENT_ID_SIZE);
     gtk_label_set_text(gtox->friendreq_dialog_id, plaintext_id);
     
     /* add request to the list and show it */

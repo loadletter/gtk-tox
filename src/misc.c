@@ -60,19 +60,20 @@ unsigned char *hex_string_to_bin(char hex_string[])
     return val;
 }
 
-char *human_readable_id(uint8_t address[TOX_FRIEND_ADDRESS_SIZE])
+char *human_readable_id(uint8_t *address, uint16_t length)
 {
-    char id[TOX_FRIEND_ADDRESS_SIZE * 2 + 1] = {0};
+    char id[length * 2 + 1];
     int i;
 
-    for (i = 0; i < TOX_FRIEND_ADDRESS_SIZE; i++)
+    memset(id, 0, sizeof(id));
+    for (i = 0; i < length; i++)
         sprintf(id,"%s%02hhx", id, address[i]);
     return strdup(id);
 }
 
 char *own_id(Tox *m)
 {
-    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
+    uint8_t address[TOX_CLIENT_ID_SIZE];
     tox_getaddress(m, address);
-    return human_readable_id(address);
+    return human_readable_id(address, TOX_CLIENT_ID_SIZE);
 }
