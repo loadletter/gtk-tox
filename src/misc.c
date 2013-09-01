@@ -60,14 +60,19 @@ unsigned char *hex_string_to_bin(char hex_string[])
     return val;
 }
 
-char *own_id(Tox *m)
+char *human_readable_id(uint8_t address[TOX_FRIEND_ADDRESS_SIZE])
 {
     char id[TOX_FRIEND_ADDRESS_SIZE * 2 + 1] = {0};
     int i;
-    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
-    tox_getaddress(m, address);
 
     for (i = 0; i < TOX_FRIEND_ADDRESS_SIZE; i++)
         sprintf(id,"%s%02hhx", id, address[i]);
     return strdup(id);
+}
+
+char *own_id(Tox *m)
+{
+    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
+    tox_getaddress(m, address);
+    return human_readable_id(address);
 }
