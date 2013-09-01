@@ -117,6 +117,7 @@ int store_data(struct gtox_data *gtox)
     return 0;
 }
 
+/* TODO: handle error checking */
 int load_data(struct gtox_data *gtox)
 {
     FILE *fd;
@@ -160,7 +161,7 @@ int load_data(struct gtox_data *gtox)
 
         if ((st = store_data(gtox)) != 0) {
             fprintf(stderr, "Store messenger failed with return code: %d\n", st);
-            exit(1);
+            return 5 + rc;
         }
     }
     return 0;
