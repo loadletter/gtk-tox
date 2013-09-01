@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <tox/tox.h>
 #include "gtkwindow.h"
 #include "storage.h"
 #include "callbacks.h"
+#include "misc.h"
 
 /* friendlist */
 typedef struct {
@@ -22,6 +24,7 @@ static int num_friends = 0;
 
 /* friendrequests */
 static uint8_t pending_requests[MAX_REQUESTS_NUM][TOX_CLIENT_ID_SIZE]; // XXX
+static GtkTreeIter iter_requests[MAX_REQUESTS_NUM];
 static uint8_t num_requests = 0; // XXX
 
 
@@ -35,26 +38,27 @@ static int add_req(uint8_t *public_key)
 /* CALLBACKS START */
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
+    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
+    char *plaintext_id;
     struct gtox_data *gtox = userdata;
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
     int n = add_req(public_key);
     
+    /* set text in the dialog */
+    gtk_label_set_text(gtox->friendreq_dialog_msg, (gchar *)data);
+    memcpy(address, public_key, TOX_FRIEND_ADDRESS_SIZE);
+    plaintext_id = human_readable_id(address);
+    gtk_label_set_text(gtox->friendreq_dialog_id, plaintext_id);
+    
+    /* show the window */
     gtk_widget_show (gtox->friendreq_dialog);
-    /*wprintw(prompt->window, "\nFriend request from:\n"); TODO
-
-    int i;
-
-    for (i = 0; i < KEY_SIZE_BYTES; ++i) {
-        wprintw(prompt->window, "%02x", public_key[i] & 0xff);
-    }
-
-    wprintw(prompt->window, "\nWith the message: %s\n", data);
-    wprintw(prompt->window, "\nUse \"accept %d\" to accept it.\n", n);
-
-    for (i = 0; i < MAX_WINDOWS_NUM; ++i) {
-        if (windows[i].onFriendRequest != NULL)
-            windows[i].onFriendRequest(&windows[i], public_key, data, length);
-    }*/
+    
+    /* add request to the list and show it */
+    gtk_list_store_append(store, &iter_requests[n]);
+    gtk_list_store_set(store, &iter_requests[n], 0, plaintext_id, 1, data, 2, n, -1);
+    note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
+    
+    free(plaintext_id);
 }
 
 void on_message(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata)
@@ -121,3 +125,14 @@ void on_friendadded(struct gtox_data *gtox, int num)
     
 }
 /* CALLBACKS END */
+
+/* friendrequest dialog buttons*/
+void on_request_accepted(GtkWidget *widget, gpointer data)
+{
+  g_print("accepted\n");
+}
+
+void on_request_ignored(GtkWidget *widget, gpointer data)
+{
+  g_print("ignored\n");
+}

@@ -110,6 +110,10 @@ int main(int argc, char *argv[])
     GtkWidget       *dht_treeview;
     GtkWidget       *friendreq_treeview;
     GtkWidget       *friendreq_dialog;
+    GtkWidget       *friendreq_dialog_acc;
+    GtkWidget       *friendreq_dialog_ign;
+    GtkLabel        *friendreq_dialog_id;
+    GtkLabel        *friendreq_dialog_msg;
     GtkNotebook     *notebook;
     guint           statusbar_context_id;
     gchar           *window_title;
@@ -143,13 +147,23 @@ int main(int argc, char *argv[])
     notebook = GTK_NOTEBOOK (gtk_builder_get_object (builder, "notebook1"));
     friendreq_treeview = GTK_WIDGET (gtk_builder_get_object (builder, "treeview3"));
     friendreq_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "friendrequest_d"));
+    friendreq_dialog_acc = GTK_WIDGET (gtk_builder_get_object (builder, "button1"));
+    friendreq_dialog_ign = GTK_WIDGET (gtk_builder_get_object (builder, "button2"));
+    friendreq_dialog_id = GTK_LABEL(gtk_builder_get_object (builder, "label3"));
+    friendreq_dialog_msg = GTK_LABEL (gtk_builder_get_object (builder, "label6"));
 
     gtk_builder_connect_signals (builder, NULL);
 
    
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(on_window_destroy), NULL);
-    
+
+    g_signal_connect(G_OBJECT (friendreq_dialog_acc), "clicked",
+        G_CALLBACK(on_request_accepted), &gtox);    
+
+    g_signal_connect(G_OBJECT (friendreq_dialog_ign), "clicked",
+        G_CALLBACK(on_request_ignored), &gtox);    
+        
     g_object_unref (G_OBJECT (builder));
     
     /* copy some gtkwidgets to gtox_data */
@@ -159,6 +173,8 @@ int main(int argc, char *argv[])
     gtox.friends_treeview = friends_treeview;
     gtox.friendreq_treeview = friendreq_treeview;
     gtox.friendreq_dialog = friendreq_dialog;
+    gtox.friendreq_dialog_id = friendreq_dialog_id;
+    gtox.friendreq_dialog_msg = friendreq_dialog_msg;
 
     /* load the data */
     load_data(&gtox);

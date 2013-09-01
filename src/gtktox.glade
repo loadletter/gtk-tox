@@ -166,6 +166,8 @@
       <column type="gchararray"/>
       <!-- column-name Message -->
       <column type="gchararray"/>
+      <!-- column-name Req_No -->
+      <column type="gint"/>
     </columns>
   </object>
   <object class="GtkWindow" id="window1">
@@ -416,12 +418,12 @@
                       <object class="GtkTreeSelection" id="treeview-selection3"/>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn" id="treeviewcolumn11">
-                        <property name="title" translatable="yes">ID</property>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn13">
+                        <property name="title" translatable="yes">No.</property>
                         <child>
-                          <object class="GtkCellRendererText" id="cellrenderertext11"/>
+                          <object class="GtkCellRendererText" id="cellrenderertext13"/>
                           <attributes>
-                            <attribute name="text">0</attribute>
+                            <attribute name="text">2</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -433,6 +435,17 @@
                           <object class="GtkCellRendererText" id="cellrenderertext12"/>
                           <attributes>
                             <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn11">
+                        <property name="title" translatable="yes">ID</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext11"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
                           </attributes>
                         </child>
                       </object>
