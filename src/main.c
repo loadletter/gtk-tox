@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <unistd.h>
 
 #include "configdir.h"
 #include "misc.h"
@@ -82,6 +83,7 @@ static void do_tox(struct gtox_data *gtox)
 
 void on_window_destroy (GtkWidget *object, gpointer user_data)
 {
+    /* close */
     gtk_main_quit ();
 }
 
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
     PangoFontDescription    *font_desc;
     struct gtox_data gtox;
     char *our_ID;
-    int rc = 0;
+    int i, rc = 0;
     
     Tox *m = init_tox();
     gtox.tox = m;
@@ -142,7 +144,7 @@ int main(int argc, char *argv[])
 
    
     g_signal_connect(G_OBJECT (window), "destroy",
-        G_CALLBACK(gtk_main_quit), NULL);
+        G_CALLBACK(on_window_destroy), NULL);
     
     g_object_unref (G_OBJECT (builder));
     
@@ -181,8 +183,16 @@ int main(int argc, char *argv[])
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &gtox);
     g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox);
     
+    /* run the GUI until the user quits*/
     gtk_widget_show (window);                
     gtk_main ();
+    
+    /* set our status to offline and keep the network running for some time */
+    tox_set_statusmessage(m, (uint8_t *)"Offline", strlen("Offline") + 1); 
+    for(i=0; i<75; i++) {
+        do_tox(&gtox);
+        c_sleep(50);
+    }
     
     /* cleanup */
     free(gtox.srvlist_path); /* TODO: make a cleanup function */
