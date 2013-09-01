@@ -172,6 +172,9 @@ int main(int argc, char *argv[])
     gtk_widget_override_font(dht_treeview, font_desc);     
     pango_font_description_free(font_desc);
     
+    /* hide Friend Request page */
+    note_hide_page(notebook, NOTEBOOK_FRIENDREQ);
+    
     /* add tox callbacks */
 /*    tox_callback_friendrequest(m, on_request, NULL);                  //TODO
     tox_callback_friendmessage(m, on_message, NULL);*/

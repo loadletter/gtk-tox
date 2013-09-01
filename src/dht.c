@@ -1,6 +1,7 @@
 #include <tox/tox.h>
 #include <gtk/gtk.h>
-#include "dht.h"  
+#include "dht.h"
+#include "gtkwindow.h"  
 #include "include/DHT.h"
 
 typedef uint8_t ipbuf[3 * 4 + 3 + 1];
@@ -28,7 +29,7 @@ void dht_draw(struct gtox_data *gtox)
     ipbuf ipbuf;
 
     /* don't waste cpu if the current page is not the dht page */
-    if(!gtk_notebook_get_current_page(gtox->notebook))
+    if(gtk_notebook_get_current_page(gtox->notebook) != NOTEBOOK_DHT)
         return;
 
     store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(dht_treeview)));

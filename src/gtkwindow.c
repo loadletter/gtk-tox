@@ -24,3 +24,23 @@ void tw_clear_list(GtkWidget *list)
 
     gtk_list_store_clear(store);
 }
+
+
+/* hide/show a notebook page */
+
+void note_hide_page(GtkNotebook *notebook, int pagenumber)
+{
+        GtkWidget *page;
+
+        page = gtk_notebook_get_nth_page(notebook, pagenumber);
+        gtk_widget_hide(page);
+}
+
+void note_show_page(GtkNotebook *notebook, int pagenumber)
+{
+        GtkWidget *page;
+
+        page = gtk_notebook_get_nth_page(notebook, pagenumber);
+        gtk_widget_show(page);
+        gtk_notebook_set_current_page(notebook, pagenumber);
+}
