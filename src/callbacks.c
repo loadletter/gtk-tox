@@ -36,6 +36,9 @@ static int add_req(uint8_t *public_key)
 }
 
 /* CALLBACKS START */
+
+/* TODO: make the dialog work with multiple requests 
+ *      find a way to associate button press with window*/
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
     uint8_t address[TOX_CLIENT_ID_SIZE];
