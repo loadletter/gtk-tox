@@ -189,6 +189,7 @@ int main(int argc, char *argv[])
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &gtox);
     g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox);
     
+    dialog_friendrequest_show(window, "test", "test");
     /* run the GUI until the user quits*/
     gtk_widget_show (window);                
     gtk_main ();

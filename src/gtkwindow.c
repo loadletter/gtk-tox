@@ -87,6 +87,7 @@ void dialog_friendrequest_show(gpointer window, gchar *text_id, gchar *text_msg)
     text = g_strdup_printf ("You received a new friend request with the message:\n\"%s\"\nFrom the following ID:\n%s", text_msg, text_id);
     label = gtk_label_new(text);
     g_free(text);
+    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
     
     image = gtk_image_new_from_file(ICON_FRIEND_ADD);
     
@@ -117,6 +118,7 @@ gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_ms
     text = g_strdup_printf ("You received a new friend request with the message:\n\"%s\"\nFrom the following ID:\n%s", text_msg, text_id);
     label = gtk_label_new(text);
     g_free(text);
+    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
     
     image = gtk_image_new_from_file(ICON_FRIEND_ADD);
     
