@@ -138,3 +138,52 @@ void on_friendadded(struct gtox_data *gtox, int num)
 }
 /* CALLBACKS END */
 
+/* callback to accept friendrequests */
+void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
+{
+    struct gtox_data *gtox = userdata;
+    GtkWidget *friendreq_tab = gtk_notebook_get_nth_page(gtox->notebook, NOTEBOOK_FRIENDREQ); /* for label change */
+    GtkTreeModel *model;
+    GtkListStore *store;
+    GtkTreeIter iter;
+    gchar *id, *msg, *tab_label_text;
+    gint reqid, rv;
+    int n = -1;
+ 
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(treeview));
+    model = gtk_tree_view_get_model(treeview);
+    
+    if(gtk_tree_model_get_iter(model, &iter, path)) {
+        gtk_tree_model_get(model, &iter, 0, &id, 1, &msg, 2, &reqid, -1);
+        g_assert(reqid < num_requests);
+    
+        rv = dialog_friendrequest_accept(gtox->window, id, msg);
+        switch(rv) {
+            case GTK_RESPONSE_ACCEPT:
+                n = tox_addfriend_norequest(gtox->tox, pending_requests[n]);
+                if(n == -1)
+                    dialog_show_error("Failed to add friend!");
+                else {
+                    /* remove from list and add/store */
+                    gtk_list_store_remove(store, &iter);
+                    on_friendadded(gtox, n);
+                    
+                    /* display the number of requests in the tab label */
+                    tab_label_text = g_strdup_printf("Friend Requests (%i)", num_requests);
+                    gtk_notebook_set_tab_label_text(gtox->notebook, friendreq_tab, tab_label_text);
+                    g_free(tab_label_text);
+                }
+                break;
+            case GTK_RESPONSE_CANCEL:
+                break;
+            case GTK_RESPONSE_REJECT:
+                /* TODO: handle this */
+                break;
+            default:
+                break;
+        }
+        
+        g_free(id);
+        g_free(msg);
+    }
+}

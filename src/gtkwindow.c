@@ -106,16 +106,17 @@ gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_ms
     gchar     *text;
     gint rv;
     
-    dialog = gtk_dialog_new_with_buttons("New friend request!",
+    dialog = gtk_dialog_new_with_buttons("Add friend",
                                           GTK_WINDOW(window),
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
                                           "_Accept", GTK_RESPONSE_ACCEPT,
                                           "_Ignore", GTK_RESPONSE_CANCEL,
+                                          "_Delete", GTK_RESPONSE_REJECT,
                                           NULL );
     
     box = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
     
-    text = g_strdup_printf ("You received a new friend request with the message:\n\"%s\"\nFrom the following ID:\n%s", text_msg, text_id);
+    text = g_strdup_printf ("Accept this friend?\nID: %s\nMessage:\n\"%s\"", text_id, text_msg);
     label = gtk_label_new(text);
     g_free(text);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
@@ -128,11 +129,6 @@ gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_ms
     gtk_widget_show_all(dialog);
 
     rv = gtk_dialog_run(GTK_DIALOG(dialog));
-    
-    if(rv == GTK_RESPONSE_ACCEPT)
-        g_print("yes\n");
-    if(rv == GTK_RESPONSE_CANCEL)
-        g_print("no\n");
     
     gtk_widget_destroy(dialog);
     

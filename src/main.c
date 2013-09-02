@@ -146,6 +146,8 @@ int main(int argc, char *argv[])
 
     g_signal_connect(G_OBJECT (window), "destroy",
         G_CALLBACK(on_window_destroy), NULL);
+    g_signal_connect(G_OBJECT (friendreq_treeview), "row-activated",
+        G_CALLBACK(on_friendrequest_clicked), &gtox);
 
     g_object_unref (G_OBJECT (builder));
     
@@ -189,7 +191,6 @@ int main(int argc, char *argv[])
     g_timeout_add(50, (GSourceFunc) core_timer_handler, &gtox);
     g_timeout_add(400, (GSourceFunc) dhtprint_timer_handler, &gtox);
     
-    dialog_friendrequest_show(window, "test", "test");
     /* run the GUI until the user quits*/
     gtk_widget_show (window);                
     gtk_main ();

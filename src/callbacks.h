@@ -11,3 +11,5 @@ void on_nickchange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, v
 void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata);
 void on_friendadded(struct gtox_data *gtox, int num);
 /* CALLBACKS END */
+
+void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata);
