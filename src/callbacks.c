@@ -40,23 +40,34 @@ static int add_req(uint8_t *public_key)
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
     uint8_t address[TOX_CLIENT_ID_SIZE];
-    char *plaintext_id;
+    char *plaintext_id, *tab_label_text;
     struct gtox_data *gtox = userdata;
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
     GtkTreeSelection *treeselect = gtk_tree_view_get_selection(GTK_TREE_VIEW(gtox->friendreq_treeview));
+    GtkWidget *friendreq_tab = gtk_notebook_get_nth_page(gtox->notebook, NOTEBOOK_FRIENDREQ); /* for label change */
     int n = add_req(public_key);
     
     /* set text */
     memcpy(address, public_key, TOX_CLIENT_ID_SIZE);
     plaintext_id = human_readable_id(address, TOX_CLIENT_ID_SIZE);
     
-    /* add request to the list, show and select it */
+    /* add request to the list */
     gtk_list_store_append(store, &iter_requests[n]);
     gtk_list_store_set(store, &iter_requests[n], 0, plaintext_id, 1, data, 2, n, -1);
+    
+    /* display the number of requests in the tab label */
+    tab_label_text = g_strdup_printf("Friend Requests (%i)", num_requests);
+    gtk_notebook_set_tab_label_text(gtox->notebook, friendreq_tab, tab_label_text);
+    g_free(tab_label_text);
+    
+    /* show the page */
     note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
+    
+    /* select the current request */
     gtk_notebook_set_current_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
     gtk_tree_selection_select_iter(treeselect, &iter_requests[n]);
     
+    /* show the non-blocking dialog */
     dialog_friendrequest_show(gtox->window, plaintext_id, (char *)data);
 
     free(plaintext_id);
