@@ -47,19 +47,15 @@ void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userd
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
     int n = add_req(public_key);
     
-    /* set text in the dialog */
-    gtk_label_set_text(gtox->friendreq_dialog_msg, (gchar *)data);
+    /* set text */
     memcpy(address, public_key, TOX_CLIENT_ID_SIZE);
     plaintext_id = human_readable_id(address, TOX_CLIENT_ID_SIZE);
-    gtk_label_set_text(gtox->friendreq_dialog_id, plaintext_id);
     
     /* add request to the list and show it */
     gtk_list_store_append(store, &iter_requests[n]);
     gtk_list_store_set(store, &iter_requests[n], 0, plaintext_id, 1, data, 2, n, -1);
-    note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
+    //note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
     
-    /* show the window */
-    gtk_widget_show (gtox->friendreq_dialog);
     
     free(plaintext_id);
 }
@@ -129,13 +125,3 @@ void on_friendadded(struct gtox_data *gtox, int num)
 }
 /* CALLBACKS END */
 
-/* friendrequest dialog buttons*/
-void on_request_accepted(GtkWidget *widget, gpointer data)
-{
-    g_print("accepted\n");
-}
-
-void on_request_ignored(GtkWidget *widget, gpointer data)
-{
-    g_print("ignored\n");
-}

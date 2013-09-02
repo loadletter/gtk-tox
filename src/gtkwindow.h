@@ -10,9 +10,6 @@ struct gtox_data {
     GtkWidget *dht_treeview;
     GtkWidget *friends_treeview;
     GtkWidget *friendreq_treeview;
-    GtkWidget *friendreq_dialog;
-    GtkLabel *friendreq_dialog_id;
-    GtkLabel *friendreq_dialog_msg;
     guint   statusbar_context_id;
 };
 
