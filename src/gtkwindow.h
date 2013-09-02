@@ -31,4 +31,5 @@ void note_show_page(GtkNotebook *notebook, int pagenumber);
 
 void dialog_show_error(const gchar *message);
 
-gint dialog_show_friendrequest(gpointer window, gchar *text_id, gchar *text_msg);
+void dialog_friendrequest_show(gpointer window, gchar *text_id, gchar *text_msg);
+gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_msg);

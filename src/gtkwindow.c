@@ -65,7 +65,38 @@ void dialog_show_error(const gchar *message)
     gtk_widget_destroy (dialog);         
 }
 
-gint dialog_show_friendrequest(gpointer window, gchar *text_id, gchar *text_msg)
+void dialog_friendrequest_show(gpointer window, gchar *text_id, gchar *text_msg)
+{
+    GtkWidget *dialog;
+    GtkWidget *box;
+    GtkWidget *label;
+    GtkWidget *image;
+    gchar     *text;
+    
+    dialog = gtk_dialog_new_with_buttons("New friend request!",
+                                          GTK_WINDOW(window),
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
+                                          GTK_STOCK_OK, GTK_RESPONSE_NONE,
+                                          NULL );
+    
+    /* Ensure that the dialog box is destroyed when the user responds */
+    g_signal_connect_swapped(dialog, "response", G_CALLBACK (gtk_widget_destroy), dialog);
+   
+    box = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    
+    text = g_strdup_printf ("You received a new friend request with the message:\n\"%s\"\nFrom the following ID:\n%s", text_msg, text_id);
+    label = gtk_label_new(text);
+    g_free(text);
+    
+    image = gtk_image_new_from_file(ICON_FRIEND_ADD);
+    
+    gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), label, TRUE, TRUE, 0);
+    
+    gtk_widget_show_all(dialog);
+}
+
+gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_msg)
 {
     GtkWidget *dialog;
     GtkWidget *box;
@@ -96,11 +127,10 @@ gint dialog_show_friendrequest(gpointer window, gchar *text_id, gchar *text_msg)
 
     rv = gtk_dialog_run(GTK_DIALOG(dialog));
     
-    if(rv == GTK_RESPONSE_ACCEPT) {
-    g_print("yes\n");
-    } else {
-    g_print("no\n");
-    }
+    if(rv == GTK_RESPONSE_ACCEPT)
+        g_print("yes\n");
+    if(rv == GTK_RESPONSE_CANCEL)
+        g_print("no\n");
     
     gtk_widget_destroy(dialog);
     
