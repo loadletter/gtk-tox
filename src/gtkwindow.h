@@ -5,6 +5,7 @@ struct gtox_data {
     Tox     *tox;
     char    *srvlist_path;
     char    *datafile_path;
+    GtkWidget *window;
     GtkWidget *statusbar;
     GtkNotebook *notebook;
     GtkWidget *dht_treeview;

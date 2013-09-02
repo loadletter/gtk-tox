@@ -155,6 +155,7 @@ int main(int argc, char *argv[])
     gtox.notebook = notebook;
     gtox.friends_treeview = friends_treeview;
     gtox.friendreq_treeview = friendreq_treeview;
+    gtox.window = window;
 
     /* load the data */
     load_data(&gtox);

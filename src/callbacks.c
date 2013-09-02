@@ -37,12 +37,12 @@ static int add_req(uint8_t *public_key)
 
 /* CALLBACKS START */
 
-/* TODO: make the dialog work with multiple requests 
- *      find a way to associate button press with window*/
+/* TODO:make the dialog non-blocking */
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
     uint8_t address[TOX_CLIENT_ID_SIZE];
     char *plaintext_id;
+    gint rc;
     struct gtox_data *gtox = userdata;
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
     int n = add_req(public_key);
@@ -51,11 +51,23 @@ void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userd
     memcpy(address, public_key, TOX_CLIENT_ID_SIZE);
     plaintext_id = human_readable_id(address, TOX_CLIENT_ID_SIZE);
     
-    /* add request to the list and show it */
+    /* add request to the list */
     gtk_list_store_append(store, &iter_requests[n]);
     gtk_list_store_set(store, &iter_requests[n], 0, plaintext_id, 1, data, 2, n, -1);
-    //note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
     
+    /* if the request is accepted, add the friend
+     * if the request is ignored, show the notebook */
+    rc = dialog_show_friendrequest(gtox->window, plaintext_id, (char *)data);
+    switch(rc) {
+        case GTK_RESPONSE_ACCEPT:
+            tox_addfriend_norequest(gtox->tox, pending_requests[n]);
+            break;
+        case GTK_RESPONSE_CANCEL:
+            note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
+            break;
+        default:
+            break;
+    }
     
     free(plaintext_id);
 }
