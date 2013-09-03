@@ -36,6 +36,24 @@ static int add_req(uint8_t *public_key)
     return num_requests - 1;
 }
 
+static void delete_friend(struct gtox_data *gtox, int f_num)
+{
+    int i;
+    tox_delfriend(gtox->tox, f_num);
+    memset(&(friends[f_num]), 0, sizeof(friend_t));
+
+    for(i = num_friends; i > 0; --i) {
+        if(friends[i-1].active)
+            break;
+    }
+
+    if(store_data(gtox)) {
+        dialog_show_error("Could not store Tox data!");
+    }
+
+    num_friends = i;
+}
+
 /* TOX CALLBACKS START */
 
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
@@ -193,3 +211,4 @@ void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeV
         g_free(msg);
     }
 }
+
