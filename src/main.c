@@ -79,17 +79,21 @@ static void do_tox(struct gtox_data *gtox)
     tox_do(m);
 }
 
-/* exits from gtk_main after closing */
+/* friends_treeview popups */
+static gboolean on_friends_popup_menu(GtkWidget *treeview, gpointer userdata)
+{
+    friends_popup_menu(treeview, NULL, userdata);
+    return TRUE;
+}
 
+/* exits from gtk_main after closing */
 static gboolean on_window_destroy(GtkWidget *object, gpointer user_data)
 {
-    /* close */
     gtk_main_quit ();
     return TRUE;
 }
 
 /* timer */
-
 static gboolean core_timer_handler(struct gtox_data *gtox)
 {
     do_tox(gtox);
@@ -150,8 +154,10 @@ int main(int argc, char *argv[])
     g_signal_connect(G_OBJECT (friendreq_treeview), "row-activated",
         G_CALLBACK(on_friendrequest_clicked), &gtox);
     g_signal_connect(G_OBJECT (friends_treeview), "button-press-event",
-        G_CALLBACK(on_friend_button_pressed), &gtox);
-
+        G_CALLBACK(on_friends_button_pressed), &gtox);
+    g_signal_connect(G_OBJECT (friends_treeview), "popup-menu",
+        G_CALLBACK(on_friends_popup_menu), &gtox);
+        
     g_object_unref (G_OBJECT (builder));
     
     /* copy some gtkwidgets to gtox_data */

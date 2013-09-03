@@ -213,12 +213,64 @@ gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkT
     return TRUE;
 }
 
-gboolean on_friend_button_pressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+
+/* FRIENDS MENU CALLBACKS START */
+
+void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata)
 {
+/* we passed the view as userdata when we connected the signal */
+GtkTreeView *treeview = GTK_TREE_VIEW(userdata);
+
+g_print ("Do something!\n");
+}
+
+void friends_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+{
+    GtkWidget *menu, *menuitem_del;
+
+    menu = gtk_menu_new();
+    menuitem_del = gtk_menu_item_new_with_label("Delete friend");
+
+    g_signal_connect(menuitem_del, "activate", (GCallback) on_friends_menu_delete, treeview);
+
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_del);
+    
+    gtk_widget_show_all(menu);
+
+    /* Note: event can be NULL here when called from on_friend_button_pressed;
+     *  gdk_event_get_time() accepts a NULL argument */
+    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
+                   (event != NULL) ? event->button : 0,
+                   gdk_event_get_time((GdkEvent*)event));
+}
+
+gboolean on_friends_button_pressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+{
+     GtkTreeSelection *selection;
+     GtkTreePath *path;
+     
     /* single click with the right mouse button? */
     if (event->type == GDK_BUTTON_PRESS  &&  event->button == 3) {
         g_print ("Single right click on the tree view.\n");
+        
+        /* get the current selection */
+        selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+        
+        /* if only one is selected, change it to the current one */
+        if (gtk_tree_selection_count_selected_rows(selection)  <= 1) {
+           /* get tree path for row that was clicked */
+            if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), (gint)event->x, (gint)event->y, &path, NULL, NULL, NULL)) {
+             gtk_tree_selection_unselect_all(selection);
+             gtk_tree_selection_select_path(selection, path);
+             gtk_tree_path_free(path);
+           }
+        }
+        friends_popup_menu(treeview, event, userdata);
+        
+        return TRUE;
     }
     
-    return TRUE;
+    return FALSE;
 }
+
+/* FRIENDS MENU CALLBACKS END */

@@ -14,4 +14,8 @@ void on_friendadded(struct gtox_data *gtox, int num);
 
 gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata);
 
-gboolean on_friend_button_pressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata);
+/* FRIENDS MENU CALLBACKS END */
+void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata);
+void friends_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata);
+gboolean on_friends_button_pressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata);
+/* FRIENDS MENU CALLBACKS END */
