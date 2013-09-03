@@ -160,7 +160,7 @@ void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeV
         rv = dialog_friendrequest_accept(gtox->window, id, msg);
         switch(rv) {
             case GTK_RESPONSE_ACCEPT:
-                n = tox_addfriend_norequest(gtox->tox, pending_requests[n]);
+                n = tox_addfriend_norequest(gtox->tox, pending_requests[reqid]);
                 if(n == -1)
                     dialog_show_error("Failed to add friend!");
                 else {
