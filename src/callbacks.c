@@ -218,10 +218,16 @@ gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkT
 
 void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata)
 {
-/* we passed the view as userdata when we connected the signal */
-GtkTreeView *treeview = GTK_TREE_VIEW(userdata);
-
-g_print ("Do something!\n");
+    /* TODO: find how to get the selected row and associate it with the friendnumber */
+    /*struct gtox_data *gtox = userdata;
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(gtox->friends_treeview));
+    GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
+    GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview));
+    GtkTreeIter iter;
+    
+    if(gtk_tree_model_get_iter(model, &iter, path)) {
+        gtk_tree_model_get(model, &iter, 0, &id, 1, &msg, 2, &reqid, -1);*/
+    g_print ("Do something!\n");
 }
 
 void friends_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
@@ -231,7 +237,7 @@ void friends_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer use
     menu = gtk_menu_new();
     menuitem_del = gtk_menu_item_new_with_label("Delete friend");
 
-    g_signal_connect(menuitem_del, "activate", (GCallback) on_friends_menu_delete, treeview);
+    g_signal_connect(menuitem_del, "activate", (GCallback) on_friends_menu_delete, userdata);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_del);
     
