@@ -65,6 +65,22 @@ void dialog_show_error(const gchar *message)
     gtk_widget_destroy (dialog);         
 }
 
+gint dialog_show_question(GtkWidget *widget, gpointer window, gchar *title, gchar *message)
+{
+  GtkWidget *dialog;
+  gint rc;
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window),
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_QUESTION,
+            GTK_BUTTONS_YES_NO,
+            message);
+  gtk_window_set_title(GTK_WINDOW(dialog), title);
+  rc = gtk_dialog_run(GTK_DIALOG(dialog));
+
+  gtk_widget_destroy(dialog);
+  return rc;
+}
+
 void dialog_friendrequest_show(gpointer window, gchar *text_id, gchar *text_msg)
 {
     GtkWidget *dialog;
