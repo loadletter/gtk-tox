@@ -81,10 +81,11 @@ static void do_tox(struct gtox_data *gtox)
 
 /* exits from gtk_main after closing */
 
-void on_window_destroy (GtkWidget *object, gpointer user_data)
+static gboolean on_window_destroy(GtkWidget *object, gpointer user_data)
 {
     /* close */
     gtk_main_quit ();
+    return TRUE;
 }
 
 /* timer */
@@ -148,6 +149,8 @@ int main(int argc, char *argv[])
         G_CALLBACK(on_window_destroy), NULL);
     g_signal_connect(G_OBJECT (friendreq_treeview), "row-activated",
         G_CALLBACK(on_friendrequest_clicked), &gtox);
+    g_signal_connect(G_OBJECT (friends_treeview), "button-press-event",
+        G_CALLBACK(on_friend_button_pressed), &gtox);
 
     g_object_unref (G_OBJECT (builder));
     

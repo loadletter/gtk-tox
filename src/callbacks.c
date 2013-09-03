@@ -164,7 +164,7 @@ void on_friendadded(struct gtox_data *gtox, int num)
 /* TOX CALLBACKS END */
 
 /* callback to accept friendrequests */
-void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
+gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
 {
     struct gtox_data *gtox = userdata;
     GtkTreeModel *model;
@@ -210,5 +210,15 @@ void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeV
         g_free(id);
         g_free(msg);
     }
+    return TRUE;
 }
 
+gboolean on_friend_button_pressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+{
+    /* single click with the right mouse button? */
+    if (event->type == GDK_BUTTON_PRESS  &&  event->button == 3) {
+        g_print ("Single right click on the tree view.\n");
+    }
+    
+    return TRUE;
+}

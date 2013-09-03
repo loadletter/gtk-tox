@@ -12,4 +12,6 @@ void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length,
 void on_friendadded(struct gtox_data *gtox, int num);
 /* CALLBACKS END */
 
-void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata);
+gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata);
+
+gboolean on_friend_button_pressed(GtkWidget *treeview, GdkEventButton *event, gpointer userdata);
