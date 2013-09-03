@@ -15,6 +15,7 @@ typedef struct {
     uint8_t status[TOX_MAX_STATUSMESSAGE_LENGTH];
     int num;
     int chatwin;
+    int active;
     GtkWindow *window;
     GtkTreeIter iter;
 } friend_t;
@@ -35,7 +36,7 @@ static int add_req(uint8_t *public_key)
     return num_requests - 1;
 }
 
-/* CALLBACKS START */
+/* TOX CALLBACKS START */
 
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
@@ -111,29 +112,38 @@ void on_statuschange(Tox *m, int friendnumber, uint8_t *string, uint16_t length,
 void on_friendadded(struct gtox_data *gtox, int num)
 {
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
-    
-    if (num_friends == MAX_FRIENDS_NUM) {
-        printf("Friend limit reached\n"); //FIX
+    int i;
+
+    if(num_friends == MAX_FRIENDS_NUM) {
+        dialog_show_error("Friend limit reached!");
         return;
     }
+    g_assert(num_friends >= 0);
 
-    friends[num_friends].num = num;
-    tox_getname(gtox->tox, num, friends[num_friends].name);
-    strcpy((char *) friends[num_friends].name, "unknown");
-    strcpy((char *) friends[num_friends].status, "unknown");
-    friends[num_friends].chatwin = FALSE;
-        
-    gtk_list_store_append(store, &friends[num_friends].iter);
-    gtk_list_store_set(store, &friends[num_friends].iter, 0, friends[num_friends].name, 1, friends[num_friends].status, -1);
+    for(i = 0; i <= num_friends; ++i) {
+        if(!friends[i].active) {
+            friends[i].num = num;
+            friends[i].active = TRUE;
+            friends[i].chatwin = FALSE;
+            strcpy((char *) friends[i].name, "unknown");
+            strcpy((char *) friends[i].status, "unknown");
+            
+            gtk_list_store_append(store, &friends[i].iter);
+            gtk_list_store_set(store, &friends[i].iter, 0, friends[i].name, 1, friends[i].status, -1);
+
+            if(i == num_friends)
+                ++num_friends;
+            
+            break;
+        }
+    }
     
-    num_friends++;
-    
-    if (store_data(gtox)) {
-        printf("Could not store Tox data\n"); //FIX
+    if(store_data(gtox)) {
+        dialog_show_error("Could not store Tox data!");
     }
     
 }
-/* CALLBACKS END */
+/* TOX CALLBACKS END */
 
 /* callback to accept friendrequests */
 void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
