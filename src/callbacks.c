@@ -40,11 +40,10 @@ static int add_req(uint8_t *public_key)
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
 {
     uint8_t address[TOX_CLIENT_ID_SIZE];
-    char *plaintext_id, *tab_label_text;
+    char *plaintext_id;
     struct gtox_data *gtox = userdata;
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friendreq_treeview)));
     GtkTreeSelection *treeselect = gtk_tree_view_get_selection(GTK_TREE_VIEW(gtox->friendreq_treeview));
-    GtkWidget *friendreq_tab = gtk_notebook_get_nth_page(gtox->notebook, NOTEBOOK_FRIENDREQ); /* for label change */
     int n = add_req(public_key);
     
     /* set text */
@@ -55,10 +54,8 @@ void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userd
     gtk_list_store_append(store, &iter_requests[n]);
     gtk_list_store_set(store, &iter_requests[n], 0, plaintext_id, 1, data, 2, n, -1);
     
-    /* display the number of requests in the tab label */
-    tab_label_text = g_strdup_printf("Friend Requests (%i)", num_requests);
-    gtk_notebook_set_tab_label_text(gtox->notebook, friendreq_tab, tab_label_text);
-    g_free(tab_label_text);
+    /* update the number of requests in the tab label */
+    update_friendrequest_tab(gtox->notebook, GTK_TREE_VIEW(gtox->friendreq_treeview));
     
     /* show the page */
     note_show_page(gtox->notebook, NOTEBOOK_FRIENDREQ);
@@ -142,11 +139,10 @@ void on_friendadded(struct gtox_data *gtox, int num)
 void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
 {
     struct gtox_data *gtox = userdata;
-    GtkWidget *friendreq_tab = gtk_notebook_get_nth_page(gtox->notebook, NOTEBOOK_FRIENDREQ); /* for label change */
     GtkTreeModel *model;
     GtkListStore *store;
     GtkTreeIter iter;
-    gchar *id, *msg, *tab_label_text;
+    gchar *id, *msg;
     gint reqid, rv;
     int n = -1;
  
@@ -168,16 +164,16 @@ void on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeV
                     gtk_list_store_remove(store, &iter);
                     on_friendadded(gtox, n);
                     
-                    /* display the number of requests in the tab label */
-                    tab_label_text = g_strdup_printf("Friend Requests (%i)", num_requests);
-                    gtk_notebook_set_tab_label_text(gtox->notebook, friendreq_tab, tab_label_text);
-                    g_free(tab_label_text);
+                    /* update the number of requests in the tab label */
+                    update_friendrequest_tab(gtox->notebook, treeview);
                 }
                 break;
             case GTK_RESPONSE_CANCEL:
                 break;
             case GTK_RESPONSE_REJECT:
-                /* TODO: handle this */
+                /* remove from list and update tab */
+                gtk_list_store_remove(store, &iter);
+                update_friendrequest_tab(gtox->notebook, treeview);
                 break;
             default:
                 break;

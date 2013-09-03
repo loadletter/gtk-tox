@@ -33,3 +33,5 @@ void dialog_show_error(const gchar *message);
 
 void dialog_friendrequest_show(gpointer window, gchar *text_id, gchar *text_msg);
 gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_msg);
+
+void update_friendrequest_tab(GtkNotebook *notebook, GtkTreeView *treeview);

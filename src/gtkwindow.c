@@ -134,3 +134,23 @@ gint dialog_friendrequest_accept(gpointer window, gchar *text_id, gchar *text_ms
     
     return rv;
 }
+
+void update_friendrequest_tab(GtkNotebook *notebook, GtkTreeView *treeview)
+{
+    GtkWidget *friendreq_tab = gtk_notebook_get_nth_page(notebook, NOTEBOOK_FRIENDREQ);
+    GtkTreeModel *model = gtk_tree_view_get_model(treeview);
+    gchar *tab_label_text;
+    gint displayed_reqs;
+        
+    /* get the number of rows of the liststore */
+    displayed_reqs = gtk_tree_model_iter_n_children(model, NULL);
+    
+    /* make/apply/free the label */
+    tab_label_text = g_strdup_printf("Friend Requests (%i)", displayed_reqs);
+    gtk_notebook_set_tab_label_text(notebook, friendreq_tab, tab_label_text);
+    g_free(tab_label_text);
+
+    /* hide the notebook if there are no requests */
+    if(displayed_reqs == 0)
+        note_hide_page(notebook, NOTEBOOK_FRIENDREQ);
+}
