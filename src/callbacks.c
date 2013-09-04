@@ -219,7 +219,7 @@ gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkT
 
 void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata)
 {
-    /* TODO: find how to get the selected row and associate it with the friendnumber */
+    /* TODO: find why friends[num].num exists */
     struct gtox_data *gtox = userdata;
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(gtox->friends_treeview));
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
@@ -254,7 +254,6 @@ void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata)
         }
     }
 
-    g_print ("Delete friend: %i!\n", num);
     g_free(text);
     free(readableid);
 }
@@ -286,18 +285,17 @@ gboolean on_friends_button_pressed(GtkWidget *treeview, GdkEventButton *event, g
      
     /* single click with the right mouse button? */
     if (event->type == GDK_BUTTON_PRESS  &&  event->button == 3) {
-        g_print ("Single right click on the tree view.\n");
         
         /* get the current selection */
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
         
         /* if only one is selected, change it to the current one */
-        if (gtk_tree_selection_count_selected_rows(selection)  <= 1) {
+        if(gtk_tree_selection_count_selected_rows(selection)  <= 1) {
            /* get tree path for row that was clicked */
-            if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), (gint)event->x, (gint)event->y, &path, NULL, NULL, NULL)) {
-             gtk_tree_selection_unselect_all(selection);
-             gtk_tree_selection_select_path(selection, path);
-             gtk_tree_path_free(path);
+            if(gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), (gint)event->x, (gint)event->y, &path, NULL, NULL, NULL)) {
+                gtk_tree_selection_unselect_all(selection);
+                gtk_tree_selection_select_path(selection, path);
+                gtk_tree_path_free(path);
            }
         }
         friends_popup_menu(treeview, event, userdata);
