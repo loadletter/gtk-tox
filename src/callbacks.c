@@ -39,7 +39,8 @@ static int add_req(uint8_t *public_key)
 static void delete_friend(struct gtox_data *gtox, int f_num)
 {
     int i;
-    tox_delfriend(gtox->tox, f_num);
+    tox_delfriend(gtox->tox, f_num); /* TODO: handle this */
+    
     memset(&(friends[f_num]), 0, sizeof(friend_t));
 
     for(i = num_friends; i > 0; --i) {
@@ -224,20 +225,38 @@ void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata)
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview));
     GtkTreeIter iter;
-    gint friend_num;
-    gchar *name, *msg;
+    gint num, rv;
+    gchar *name, *msg, *text;
+    char *readableid;
+    uint8_t friendid[TOX_CLIENT_ID_SIZE];
 
     if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) /* TODO: handle better */
         return;
 
     if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
-        gtk_tree_model_get(model, &iter, 0, &name, 1, &msg, 2, &friend_num, -1);
+        gtk_tree_model_get(model, &iter, 0, &name, 1, &msg, 2, &num, -1);
         
-        /*dialog_show_question(gtox->window,
-        gtk_list_store_remove(store, &iter);*/
+        g_assert(friends[num].num == num);
+        
+        tox_getclient_id(gtox->tox, num, friendid);
+        readableid = human_readable_id(friendid, TOX_CLIENT_ID_SIZE);
+        text = g_strdup_printf("Do you want to delete the friend:\n\"%s\"\nwith the following ID:\n%s", name, readableid);
+    
+        rv = dialog_show_question(gtox->window, "Delete friend?", text);
+        switch(rv) {
+            case GTK_RESPONSE_YES:
+            delete_friend(gtox, num);
+            gtk_list_store_remove(store, &iter);
+            case GTK_RESPONSE_NO:
+            break;
+            default:
+            break;
+        }
     }
 
-    g_print ("Delete friend: %i!\n", friend_num);
+    g_print ("Delete friend: %i!\n", num);
+    g_free(text);
+    free(readableid);
 }
 
 void friends_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
