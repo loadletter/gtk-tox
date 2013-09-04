@@ -147,7 +147,7 @@ void on_friendadded(struct gtox_data *gtox, int num)
             strcpy((char *) friends[i].status, "unknown");
             
             gtk_list_store_append(store, &friends[i].iter);
-            gtk_list_store_set(store, &friends[i].iter, 0, friends[i].name, 1, friends[i].status, -1);
+            gtk_list_store_set(store, &friends[i].iter, 0, friends[i].name, 1, friends[i].status, 2, i, -1);
 
             if(i == num_friends)
                 ++num_friends;
@@ -219,15 +219,25 @@ gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkT
 void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata)
 {
     /* TODO: find how to get the selected row and associate it with the friendnumber */
-    /*struct gtox_data *gtox = userdata;
+    struct gtox_data *gtox = userdata;
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(gtox->friends_treeview));
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview)));
     GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(gtox->friends_treeview));
     GtkTreeIter iter;
-    
-    if(gtk_tree_model_get_iter(model, &iter, path)) {
-        gtk_tree_model_get(model, &iter, 0, &id, 1, &msg, 2, &reqid, -1);*/
-    g_print ("Do something!\n");
+    gint friend_num;
+    gchar *name, *msg;
+
+    if (gtk_tree_model_get_iter_first(model, &iter) == FALSE) /* TODO: handle better */
+        return;
+
+    if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+        gtk_tree_model_get(model, &iter, 0, &name, 1, &msg, 2, &friend_num, -1);
+        
+        /*dialog_show_question(gtox->window,
+        gtk_list_store_remove(store, &iter);*/
+    }
+
+    g_print ("Delete friend: %i!\n", friend_num);
 }
 
 void friends_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
