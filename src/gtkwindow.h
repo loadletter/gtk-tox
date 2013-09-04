@@ -23,9 +23,6 @@ enum
 
 #define ICON_FRIEND_ADD "icons/user_add.png"
 
-void tw_add_to_list(GtkWidget *list, int list_item, const gchar *str);
-void tw_clear_list(GtkWidget *list);
-
 void note_hide_page(GtkNotebook *notebook, int pagenumber);
 void note_show_page(GtkNotebook *notebook, int pagenumber);
 
