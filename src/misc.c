@@ -73,7 +73,7 @@ char *human_readable_id(uint8_t *address, uint16_t length)
 
 char *own_id(Tox *m)
 {
-    uint8_t address[TOX_CLIENT_ID_SIZE];
+    uint8_t address[TOX_FRIEND_ADDRESS_SIZE];
     tox_getaddress(m, address);
-    return human_readable_id(address, TOX_CLIENT_ID_SIZE);
+    return human_readable_id(address, TOX_FRIEND_ADDRESS_SIZE);
 }
