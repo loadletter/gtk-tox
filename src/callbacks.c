@@ -58,8 +58,11 @@ static void delete_friend(struct gtox_data *gtox, int f_num)
 static int show_chat_window(struct gtox_data *gtox, int f_num)
 {
     if(!friends[f_num].chatwin) {
-        /*show window*/
         friends[f_num].chatwin = TRUE;
+        g_assert(friends[f_num].window == NULL);
+        friends[f_num].window = do_chat_window(friends[f_num].window);
+        g_assert(friends[f_num].window != NULL);
+        
         g_print("Window with friend N. %i\n", f_num);
     } else {
         g_print("Window with N. %i alredy exists\n", f_num);

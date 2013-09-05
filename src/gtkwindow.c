@@ -144,3 +144,35 @@ void update_friendrequest_tab(GtkNotebook *notebook, GtkTreeView *treeview)
     if(displayed_reqs == 0)
         note_hide_page(notebook, NOTEBOOK_FRIENDREQ);
 }
+
+void on_chat_window_close(GtkWidget *widget, gpointer data)
+{
+    GtkWidget *window = (GtkWidget *) data;
+
+    gtk_widget_destroy(window);
+    window = NULL;
+}
+
+GtkWidget *do_chat_window(GtkWidget *window)
+{
+
+    if(!window) {
+        window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        gtk_window_set_title(GTK_WINDOW(window), "Chat");
+        gtk_window_set_default_size(GTK_WINDOW(window), 230, 150);
+        gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+        g_signal_connect_swapped(G_OBJECT(window), "destroy",
+            G_CALLBACK(on_chat_window_close), window);
+    }
+    
+    
+    if (!gtk_widget_get_visible(window))
+        gtk_widget_show(window);
+    else {
+        gtk_widget_destroy(window);
+        window = NULL;
+    }
+
+  return window;
+}
