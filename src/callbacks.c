@@ -55,6 +55,19 @@ static void delete_friend(struct gtox_data *gtox, int f_num)
     num_friends = i;
 }
 
+static int show_chat_window(struct gtox_data *gtox, int f_num)
+{
+    if(!friends[f_num].chatwin) {
+        /*show window*/
+        friends[f_num].chatwin = TRUE;
+        g_print("Window with friend N. %i\n", f_num);
+    } else {
+        g_print("Window with N. %i alredy exists\n", f_num);
+    }
+    
+    return 0;
+}
+
 /* TOX CALLBACKS START */
 
 void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userdata)
@@ -92,7 +105,9 @@ void on_request(uint8_t *public_key, uint8_t *data, uint16_t length, void *userd
 
 void on_message(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata)
 {
-
+    struct gtox_data *gtox = userdata;
+    
+    show_chat_window(gtox, friendnumber);
 }
 
 void on_action(Tox *m, int friendnumber, uint8_t *string, uint16_t length, void *userdata)
@@ -307,3 +322,31 @@ gboolean on_friends_button_pressed(GtkWidget *treeview, GdkEventButton *event, g
 }
 
 /* FRIENDS MENU CALLBACKS END */
+
+/* callback to open a chat window */
+gboolean on_friends_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
+{
+    struct gtox_data *gtox = userdata;
+    GtkTreeModel *model;
+    GtkListStore *store;
+    GtkTreeIter iter;
+    gchar *id, *msg;
+    gint num;
+ 
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(treeview));
+    model = gtk_tree_view_get_model(treeview);
+    
+    if(gtk_tree_model_get_iter(model, &iter, path)) {
+        gtk_tree_model_get(model, &iter, 0, &id, 1, &msg, 2, &num, -1);
+        g_assert(num < num_friends);
+        
+        show_chat_window(gtox, num);
+   
+        
+        
+        g_free(id);
+        g_free(msg);
+    }
+    return TRUE;
+}
+

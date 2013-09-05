@@ -13,6 +13,7 @@ void on_friendadded(struct gtox_data *gtox, int num);
 /* CALLBACKS END */
 
 gboolean on_friendrequest_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata);
+gboolean on_friends_clicked(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata);
 
 /* FRIENDS MENU CALLBACKS END */
 void on_friends_menu_delete(GtkWidget *menuitem, gpointer userdata);

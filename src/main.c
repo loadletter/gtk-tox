@@ -153,6 +153,8 @@ int main(int argc, char *argv[])
         G_CALLBACK(on_window_destroy), NULL);
     g_signal_connect(G_OBJECT (friendreq_treeview), "row-activated",
         G_CALLBACK(on_friendrequest_clicked), &gtox);
+    g_signal_connect(G_OBJECT (friends_treeview), "row-activated",
+        G_CALLBACK(on_friends_clicked), &gtox);
     g_signal_connect(G_OBJECT (friends_treeview), "button-press-event",
         G_CALLBACK(on_friends_button_pressed), &gtox);
     g_signal_connect(G_OBJECT (friends_treeview), "popup-menu",
@@ -191,7 +193,7 @@ int main(int argc, char *argv[])
     
     /* add tox callbacks */
     tox_callback_friendrequest(m, on_request, &gtox);                  //TODO
-/*    tox_callback_friendmessage(m, on_message, NULL);*/
+    tox_callback_friendmessage(m, on_message, &gtox);
     tox_callback_namechange(m, on_nickchange, &gtox);
     tox_callback_statusmessage(m, on_statuschange, &gtox);
    /* tox_callback_action(m, on_action, NULL);*/
